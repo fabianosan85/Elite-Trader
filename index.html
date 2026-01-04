@@ -160,9 +160,21 @@
                         <div class="field-group"><label>Liga</label><input type="text" id="cs-campeonato" list="camp-list" placeholder="Liga"></div>
                         <div class="field-group"><label>Placar</label>
                             <select id="cs-placar-sel">
-                                <option value="1-0">1-0</option><option value="2-0">2-0</option><option value="2-1">2-1</option>
-                                <option value="0-1">0-1</option><option value="0-2">0-2</option><option value="1-2">1-2</option>
-                                <option value="1-1">1-1</option><option value="Outros">Outros</option>
+                                <optgroup label="Empates">
+                                    <option value="0-0">0-0</option><option value="1-1">1-1</option>
+                                    <option value="2-2">2-2</option><option value="3-3">3-3</option>
+                                </optgroup>
+                                <optgroup label="Mandante Vence">
+                                    <option value="1-0">1-0</option><option value="2-0">2-0</option>
+                                    <option value="2-1">2-1</option><option value="3-0">3-0</option>
+                                    <option value="3-1">3-1</option><option value="3-2">3-2</option>
+                                </optgroup>
+                                <optgroup label="Visitante Vence">
+                                    <option value="0-1">0-1</option><option value="0-2">0-2</option>
+                                    <option value="1-2">1-2</option><option value="0-3">0-3</option>
+                                    <option value="1-3">1-3</option><option value="2-3">2-3</option>
+                                </optgroup>
+                                <option value="Outros">Qualquer Outro Resultado</option>
                             </select>
                         </div>
                         <div class="field-group"><label>Odd In</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
@@ -187,12 +199,12 @@
     </div>
 
     <datalist id="global-teams">
-        <option value="Flamengo"><option value="Palmeiras"><option value="São Paulo"><option value="Corinthians">
-        <option value="Real Madrid"><option value="Barcelona"><option value="Man City">
+        <option value="Flamengo"><option value="Palmeiras"><option value="São Paulo"><option value="Corinthians"><option value="Santos"><option value="Grêmio"><option value="Internacional"><option value="Cruzeiro"><option value="Vasco"><option value="Fluminense"><option value="Botafogo"><option value="Atlético-MG"><option value="Athletico-PR"><option value="Bahia"><option value="Fortaleza"><option value="Coritiba"><option value="Goiás"><option value="Cuiabá"><option value="América-MG"><option value="Red Bull Bragantino"><option value="Vitória"><option value="Sport"><option value="Ceará"><option value="Juventude">
+        <option value="Real Madrid"><option value="Barcelona"><option value="Atlético de Madrid"><option value="Sevilla"><option value="Man City"><option value="Arsenal"><option value="Liverpool"><option value="Man United"><option value="Chelsea"><option value="Tottenham"><option value="Bayern Munique"><option value="Dortmund"><option value="Leverkusen"><option value="Inter Milão"><option value="Milan"><option value="Juventus"><option value="Napoli"><option value="PSG"><option value="River Plate"><option value="Boca Juniors">
     </datalist>
 
     <datalist id="camp-list">
-        <option value="Brasileirão Série A"><option value="Premier League"><option value="La Liga">
+        <option value="Brasileirão Série A"><option value="Brasileirão Série B"><option value="Copa do Brasil"><option value="Libertadores"><option value="Premier League"><option value="La Liga"><option value="Bundesliga"><option value="Serie A (ITA)"><option value="Champions League">
     </datalist>
 
     <script type="module">
@@ -251,11 +263,7 @@
             let totalPL = 0, totalStake = 0, acertosCount = 0;
 
             data.forEach((r, i) => {
-                const pl = r.saida - r.entrada; 
-                totalPL += pl; 
-                totalStake += r.entrada;
-                
-                // Lógica de contagem de acertos: se o P/L for positivo
+                const pl = r.saida - r.entrada; totalPL += pl; totalStake += r.entrada;
                 if (pl > 0) acertosCount++;
 
                 tbody.innerHTML += `<tr>
@@ -277,14 +285,12 @@
             document.getElementById(`${prefix}-perc-banca`).innerText = `${(totalPL / STAKE_FIXA * 100).toFixed(2)}%`;
             document.getElementById(`${prefix}-roi`).innerText = totalStake > 0 ? (totalPL/totalStake*100).toFixed(2) + "%" : "0.00%";
             
-            // Atualiza os contadores de Trades e Acertos
             if (prefix === 'lm') {
                 document.getElementById('lm-trades').innerText = data.length;
             } else {
                 document.getElementById('cs-count').innerText = acertosCount;
             }
             
-            // Reatribui eventos de botões
             data.forEach((_, i) => {
                 document.getElementById(`del-${prefix}-${i}`).onclick = () => { if(confirm("Excluir?")) { data.splice(i,1); set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), data); }};
                 document.getElementById(`edit-${prefix}-${i}`).onclick = () => {
@@ -329,7 +335,6 @@
 
         function limpar() { document.querySelectorAll('input:not([type="date"])').forEach(i => i.value = ''); }
 
-        // Timer
         let startTime, elapsedTime = 0, timerInterval = null;
         document.getElementById('timer-start').onclick = () => { if(!timerInterval){ startTime = Date.now() - elapsedTime; timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; document.getElementById("display").innerText = timeToString(elapsedTime); }, 10); } };
         document.getElementById('timer-stop').onclick = () => { clearInterval(timerInterval); timerInterval = null; };
@@ -339,7 +344,6 @@
             return `${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}:${ms.toString().padStart(3, '0')}`;
         }
 
-        // Navegação
         document.getElementById('menu-lm').onclick = () => { document.getElementById('live-market').classList.add('active'); document.getElementById('correct-score').classList.remove('active'); document.getElementById('menu-lm').classList.add('active'); document.getElementById('menu-cs').classList.remove('active'); };
         document.getElementById('menu-cs').onclick = () => { document.getElementById('correct-score').classList.add('active'); document.getElementById('live-market').classList.remove('active'); document.getElementById('menu-cs').classList.add('active'); document.getElementById('menu-lm').classList.remove('active'); };
     </script>
