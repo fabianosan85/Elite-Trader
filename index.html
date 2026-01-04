@@ -92,7 +92,7 @@
         <aside class="sidebar">
             <a href="#" class="logo">⚡ ELITE TRADER</a>
             <div class="menu-item active" id="menu-lm">⚽ UNDER LIMIT</div>
-            <div class="menu-item" id="menu-cs">🎯 ALAVANCAGEM CS</div>
+            <div class="menu-item" id="menu-cs">🎯 CORRECT SCORE</div>
             <button class="btn-logout" id="btn-logout">LOGOUT / SAIR</button>
         </aside>
 
@@ -116,8 +116,8 @@
                         <div class="field-group"><label>Liga</label><input type="text" id="lm-campeonato" list="camp-list" placeholder="Liga"></div>
                         <div class="field-group"><label>Placar</label><input type="text" id="lm-placar" placeholder="0-0"></div>
                         <div class="field-group"><label>Minuto</label><input type="number" id="lm-minuto" placeholder="Min"></div>
-                        <div class="field-group"><label>Odd In</label><input type="number" step="0.01" id="lm-oddE" placeholder="1.00"></div>
-                        <div class="field-group"><label>Odd Out</label><input type="number" step="0.01" id="lm-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Entrada(Back)</label><input type="number" step="0.01" id="lm-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Saida(Lay)</label><input type="number" step="0.01" id="lm-oddS" placeholder="1.00"></div>
                         <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada" placeholder="0.00"></div>
                         <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida" placeholder="0.00"></div>
                     </div>
@@ -134,7 +134,7 @@
                     <h3>Historico Hunter Limit</h3>
                     <table id="tabelaLM">
                         <thead>
-                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd In</th><th>Odd Out</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr>
+                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada(Back)</th><th>Odd Saida(Lay)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -177,8 +177,8 @@
                                 <option value="Outros">Qualquer Outro Resultado</option>
                             </select>
                         </div>
-                        <div class="field-group"><label>Odd In</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
-                        <div class="field-group"><label>Odd Out</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Entrada(Lay)</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Saida(Back)</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
                         <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada" placeholder="0.00"></div>
                         <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida" placeholder="0.00"></div>
                     </div>
@@ -189,7 +189,7 @@
                     <h3>Historico Correct Score</h3>
                     <table id="tabelaCS">
                         <thead>
-                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd In</th><th>Odd Out</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr>
+                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada(Lay)</th><th>Odd Saida(Back)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -349,3 +349,4 @@
     </script>
 </body>
 </html>
+
