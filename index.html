@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Trader | Full Cloud Sync</title>
+    <title>Elite Trader | Secure Cloud Sync</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -14,6 +14,24 @@
             --cs-accent: #00d4ff;
         }
         body { font-family: 'Roboto', sans-serif; background: var(--bg-body); color: var(--text-white); margin: 0; display: flex; min-height: 100vh; overflow: hidden; }
+
+        /* Estilo da Tela de Login */
+        #auth-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); display: flex; align-items: center; justify-content: center; z-index: 10000;
+        }
+        .auth-box {
+            background: var(--bg-card); padding: 40px; border-radius: 12px; border: 1px solid var(--accent);
+            text-align: center; width: 320px; box-shadow: 0 0 20px rgba(177, 255, 0, 0.2);
+        }
+        .auth-box h2 { color: var(--accent); font-family: 'Roboto Condensed'; margin-bottom: 25px; }
+        .auth-box input { width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+        
+        /* Layout Principal (Escondido antes do login) */
+        #main-app { display: none; width: 100%; height: 100vh; }
+        body.logged-in #auth-container { display: none; }
+        body.logged-in #main-app { display: flex; }
+
         .sidebar { width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 20px; flex-shrink: 0; }
         .logo { font-family: 'Roboto Condensed'; font-size: 22px; color: var(--accent); margin-bottom: 40px; display: block; text-decoration: none; padding-top: 20px; }
         .menu-item { padding: 12px; border-radius: 6px; color: var(--text-gray); cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-size: 13px; font-weight: bold; }
@@ -42,6 +60,7 @@
         .pos { color: var(--accent); font-weight: bold; }
         .neg { color: var(--danger); font-weight: bold; }
         .btn-action { background: none; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 5px 8px; border-radius: 3px; cursor: pointer; text-transform: uppercase; font-size: 9px; margin: 0 2px; }
+        .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); width: 100%; margin-top: 20px; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .page-cs h3 { color: var(--cs-accent); border-bottom-color: var(--cs-accent); }
         .page-cs .stat-box { border-bottom-color: var(--cs-accent); }
         .page-cs .market-card, .page-cs .table-card { border-color: var(--cs-accent); }
@@ -49,100 +68,114 @@
 </head>
 <body>
 
-    <aside class="sidebar">
-        <a href="#" class="logo">⚡ ELITE CONECT</a>
-        <div class="menu-item active" id="menu-lm">⚽ UNDER LIMIT</div>
-        <div class="menu-item" id="menu-cs">🎯 ALAVANCAGEM CS</div>
-    </aside>
-
-    <main class="main-content" id="mainScroll">
-        <div id="live-market" class="page active">
-            <div class="stats-header">
-                <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
-                <div class="stat-box"><small>Stake Inicial</small><div>R$ 40,00</div></div>
-                <div class="stat-box"><small>% Lucro s/ Stake</small><div id="lm-perc-banca">0.00%</div></div>
-                <div class="stat-box"><small>ROI % Under</small><div id="lm-roi">0.00%</div></div>
-                <div class="stat-box"><small>Trades</small><div id="lm-trades">0</div></div>
-            </div>
-            <div class="chart-container"><canvas id="profitChartLM"></canvas></div>
-            <section class="market-card">
-                <h3>Registrar Apostas Under Limit</h3>
-                <div class="form-grid">
-                    <div class="field-group"><label>Data</label><input type="date" id="lm-data"></div>
-                    <div class="field-group"><label>Mandante</label><input type="text" id="lm-timeA" list="global-teams" placeholder="Mandante"></div>
-                    <div class="field-group"><label>Visitante</label><input type="text" id="lm-timeB" list="global-teams" placeholder="Visitante"></div>
-                    <div class="field-group"><label>Liga</label><input type="text" id="lm-campeonato" list="camp-list" placeholder="Liga"></div>
-                    <div class="field-group"><label>Placar</label><input type="text" id="lm-placar" placeholder="0-0"></div>
-                    <div class="field-group"><label>Minuto</label><input type="number" id="lm-minuto" placeholder="Min"></div>
-                    <div class="field-group"><label>Odd Entrada(Back)</label><input type="number" step="0.01" id="lm-oddE" placeholder="1.00"></div>
-                    <div class="field-group"><label>Odd Saida(Lay)</label><input type="number" step="0.01" id="lm-oddS" placeholder="1.00"></div>
-                    <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada" placeholder="0.00"></div>
-                    <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida" placeholder="0.00"></div>
-                </div>
-                <div class="timer-box">
-                    <div id="display" class="time-display">00:00:000</div>
-                    <button class="btn-action" id="timer-start">Start</button>
-                    <button class="btn-action" id="timer-stop">Stop</button>
-                    <button class="btn-action" id="timer-reset">Reset</button>
-                </div>
-                <button class="btn-submit" id="btn-add-lm">GRAVAR NA NUVEM</button>
-            </section>
-            <div class="table-card">
-                <h3>Historico Hunter Limit</h3>
-                <table id="tabelaLM"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr></thead><tbody></tbody></table>
-            </div>
+    <div id="auth-container">
+        <div class="auth-box">
+            <h2>ELITE ACCESS</h2>
+            <input type="email" id="login-email" placeholder="Seu E-mail">
+            <input type="password" id="login-password" placeholder="Sua Senha">
+            <button class="btn-submit" id="btn-login">ACESSAR PAINEL</button>
+            <p id="auth-error" style="color: var(--danger); font-size: 12px; margin-top: 15px; display: none;">Erro ao acessar. Verifique os dados.</p>
         </div>
+    </div>
 
-        <div id="correct-score" class="page page-cs">
-            <div class="stats-header">
-                <div class="stat-box"><small>Total P/L CS</small><div id="cs-lucro" style="color: var(--cs-accent);">R$ 0,00</div></div>
-                <div class="stat-box"><small>Stake Inicial</small><div style="color: var(--cs-accent);">R$ 40,00</div></div>
-                <div class="stat-box"><small>% Lucro s/ Stake</small><div id="cs-perc-banca" style="color: var(--cs-accent);">0.00%</div></div>
-                <div class="stat-box"><small>ROI % CS</small><div id="cs-roi" style="color: var(--cs-accent);">0.00%</div></div>
-                <div class="stat-box"><small>Acertos</small><div id="cs-count" style="color: var(--cs-accent);">0</div></div>
-            </div>
-            <div class="chart-container"><canvas id="profitChartCS"></canvas></div>
-            <section class="market-card">
-                <h3>Registrar Apostas Correct Score</h3>
-                <div class="form-grid">
-                    <div class="field-group"><label>Data</label><input type="date" id="cs-data"></div>
-                    <div class="field-group"><label>Mandante</label><input type="text" id="cs-timeA" list="global-teams" placeholder="Mandante"></div>
-                    <div class="field-group"><label>Visitante</label><input type="text" id="cs-timeB" list="global-teams" placeholder="Visitante"></div>
-                    <div class="field-group"><label>Liga</label><input type="text" id="cs-campeonato" list="camp-list" placeholder="Liga"></div>
-                    <div class="field-group"><label>Placar</label>
-                        <select id="cs-placar-sel">
-                            <option value="1-0">1-0</option><option value="2-0">2-0</option><option value="2-1">2-1</option>
-                            <option value="0-1">0-1</option><option value="0-2">0-2</option><option value="1-2">1-2</option>
-                            <option value="1-1">1-1</option><option value="Outros">Outros</option>
-                        </select>
+    <div id="main-app">
+        <aside class="sidebar">
+            <a href="#" class="logo">⚡ ELITE CONECT</a>
+            <div class="menu-item active" id="menu-lm">⚽ UNDER LIMIT</div>
+            <div class="menu-item" id="menu-cs">🎯 ALAVANCAGEM CS</div>
+            <button class="btn-logout" id="btn-logout">LOGOUT / SAIR</button>
+        </aside>
+
+        <main class="main-content" id="mainScroll">
+            <div id="live-market" class="page active">
+                <div class="stats-header">
+                    <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
+                    <div class="stat-box"><small>Stake Inicial</small><div>R$ 40,00</div></div>
+                    <div class="stat-box"><small>% Lucro s/ Stake</small><div id="lm-perc-banca">0.00%</div></div>
+                    <div class="stat-box"><small>ROI % Under</small><div id="lm-roi">0.00%</div></div>
+                    <div class="stat-box"><small>Trades</small><div id="lm-trades">0</div></div>
+                </div>
+                <div class="chart-container"><canvas id="profitChartLM"></canvas></div>
+                <section class="market-card">
+                    <h3>Registrar Apostas Under Limit</h3>
+                    <div class="form-grid">
+                        <div class="field-group"><label>Data</label><input type="date" id="lm-data"></div>
+                        <div class="field-group"><label>Mandante</label><input type="text" id="lm-timeA" list="global-teams" placeholder="Mandante"></div>
+                        <div class="field-group"><label>Visitante</label><input type="text" id="lm-timeB" list="global-teams" placeholder="Visitante"></div>
+                        <div class="field-group"><label>Liga</label><input type="text" id="lm-campeonato" list="camp-list" placeholder="Liga"></div>
+                        <div class="field-group"><label>Placar</label><input type="text" id="lm-placar" placeholder="0-0"></div>
+                        <div class="field-group"><label>Minuto</label><input type="number" id="lm-minuto" placeholder="Min"></div>
+                        <div class="field-group"><label>Odd Entrada</label><input type="number" step="0.01" id="lm-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Saida</label><input type="number" step="0.01" id="lm-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada" placeholder="0.00"></div>
+                        <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida" placeholder="0.00"></div>
                     </div>
-                    <div class="field-group"><label>Odd Entrada(Lay)</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
-                    <div class="field-group"><label>Odd Saida(Back)</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
-                    <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada" placeholder="0.00"></div>
-                    <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida" placeholder="0.00"></div>
+                    <div class="timer-box">
+                        <div id="display" class="time-display">00:00:000</div>
+                        <button class="btn-action" id="timer-start">Start</button>
+                        <button class="btn-action" id="timer-stop">Stop</button>
+                        <button class="btn-action" id="timer-reset">Reset</button>
+                    </div>
+                    <button class="btn-submit" id="btn-add-lm">GRAVAR NA NUVEM</button>
+                </section>
+                <div class="table-card">
+                    <h3>Historico Hunter Limit</h3>
+                    <table id="tabelaLM"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr></thead><tbody></tbody></table>
                 </div>
-                <button class="btn-submit" id="btn-add-cs" style="background: var(--cs-accent);">GRAVAR NA NUVEM</button>
-            </section>
-            <div class="table-card">
-                <h3>Historico Correct Score</h3>
-                <table id="tabelaCS"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr></thead><tbody></tbody></table>
             </div>
-        </div>
-    </main>
+
+            <div id="correct-score" class="page page-cs">
+                <div class="stats-header">
+                    <div class="stat-box"><small>Total P/L CS</small><div id="cs-lucro" style="color: var(--cs-accent);">R$ 0,00</div></div>
+                    <div class="stat-box"><small>Stake Inicial</small><div style="color: var(--cs-accent);">R$ 40,00</div></div>
+                    <div class="stat-box"><small>% Lucro s/ Stake</small><div id="cs-perc-banca" style="color: var(--cs-accent);">0.00%</div></div>
+                    <div class="stat-box"><small>ROI % CS</small><div id="cs-roi" style="color: var(--cs-accent);">0.00%</div></div>
+                    <div class="stat-box"><small>Acertos</small><div id="cs-count" style="color: var(--cs-accent);">0</div></div>
+                </div>
+                <div class="chart-container"><canvas id="profitChartCS"></canvas></div>
+                <section class="market-card">
+                    <h3>Registrar Apostas Correct Score</h3>
+                    <div class="form-grid">
+                        <div class="field-group"><label>Data</label><input type="date" id="cs-data"></div>
+                        <div class="field-group"><label>Mandante</label><input type="text" id="cs-timeA" list="global-teams" placeholder="Mandante"></div>
+                        <div class="field-group"><label>Visitante</label><input type="text" id="cs-timeB" list="global-teams" placeholder="Visitante"></div>
+                        <div class="field-group"><label>Liga</label><input type="text" id="cs-campeonato" list="camp-list" placeholder="Liga"></div>
+                        <div class="field-group"><label>Placar</label>
+                            <select id="cs-placar-sel">
+                                <option value="1-0">1-0</option><option value="2-0">2-0</option><option value="2-1">2-1</option>
+                                <option value="0-1">0-1</option><option value="0-2">0-2</option><option value="1-2">1-2</option>
+                                <option value="1-1">1-1</option><option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="field-group"><label>Odd Entrada</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Saida</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada" placeholder="0.00"></div>
+                        <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida" placeholder="0.00"></div>
+                    </div>
+                    <button class="btn-submit" id="btn-add-cs" style="background: var(--cs-accent);">GRAVAR NA NUVEM</button>
+                </section>
+                <div class="table-card">
+                    <h3>Historico Correct Score</h3>
+                    <table id="tabelaCS"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <datalist id="global-teams">
-        <option value="Flamengo"><option value="Palmeiras"><option value="São Paulo"><option value="Corinthians"><option value="Santos"><option value="Grêmio"><option value="Internacional"><option value="Cruzeiro"><option value="Vasco"><option value="River Plate"><option value="Boca Juniors"><option value="Racing">
-        <option value="Real Madrid"><option value="Barcelona"><option value="Man City"><option value="Arsenal"><option value="Liverpool"><option value="Man United"><option value="Bayern Munique"><option value="Dortmund"><option value="Leverkusen"><option value="PSG"><option value="Juventus"><option value="Inter Milão"><option value="Milan">
+        <option value="Flamengo"><option value="Palmeiras"><option value="Man City"><option value="Real Madrid">
     </datalist>
-
     <datalist id="camp-list">
-        <option value="Brasileirão Série A"><option value="Brasileirão Série B"><option value="Premier League"><option value="La Liga"><option value="Bundesliga"><option value="Serie A (ITA)"><option value="Ligue 1"><option value="Liga Profissional ARG">
+        <option value="Brasileirão Série A"><option value="Premier League"><option value="La Liga">
     </datalist>
 
     <script type="module">
+        // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
+        // SUA CONFIGURAÇÃO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCI0iUANVLaxqJJ351bpHkUmktGljPO7jQ",
             authDomain: "elitetraderconect.firebaseapp.com",
@@ -155,24 +188,46 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const auth = getAuth(app);
+
         const STAKE_FIXA = 40.00;
         let tradesLM = [], tradesCS = [];
 
-        // Gráficos
-        const chartLM = new Chart(document.getElementById('profitChartLM').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L Under', data: [], borderColor: '#b1ff00', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false } });
-        const chartCS = new Chart(document.getElementById('profitChartCS').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L CS', data: [], borderColor: '#00d4ff', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false } });
+        // --- LÓGICA DE AUTENTICAÇÃO ---
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
 
-        // Timer
-        let startTime, elapsedTime = 0, timerInterval = null;
-        const timeDisplay = document.getElementById("display");
-        function timeToString(t) {
-            let mm = Math.floor(t / 60000), ss = Math.floor((t % 60000) / 1000), ms = Math.floor(t % 1000);
-            return `${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}:${ms.toString().padStart(3, '0')}`;
+        btnLogin.onclick = () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            signInWithEmailAndPassword(auth, email, pass).catch(err => {
+                document.getElementById('auth-error').style.display = 'block';
+            });
+        };
+
+        btnLogout.onclick = () => signOut(auth);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.body.classList.add('logged-in');
+                iniciarApp();
+            } else {
+                document.body.classList.remove('logged-in');
+            }
+        });
+
+        // --- LÓGICA DO APP ---
+        let chartLM, chartCS;
+
+        function iniciarApp() {
+            if(!chartLM) {
+                chartLM = new Chart(document.getElementById('profitChartLM').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L Under', data: [], borderColor: '#b1ff00', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false } });
+                chartCS = new Chart(document.getElementById('profitChartCS').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L CS', data: [], borderColor: '#00d4ff', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false } });
+            }
+            
+            onValue(ref(db, 'trades_under'), (snap) => { tradesLM = snap.val() || []; atualizarInterface(); });
+            onValue(ref(db, 'trades_cs'), (snap) => { tradesCS = snap.val() || []; atualizarInterface(); });
         }
-
-        // Sincronização Nuvem
-        onValue(ref(db, 'trades_under'), (snap) => { tradesLM = snap.val() || []; atualizarInterface(); });
-        onValue(ref(db, 'trades_cs'), (snap) => { tradesCS = snap.val() || []; atualizarInterface(); });
 
         function atualizarInterface() {
             renderTable('tabelaLM', tradesLM, 'lm');
@@ -208,30 +263,32 @@
                 document.getElementById(`edit-${prefix}-${i}`).onclick = () => {
                     const r = data[i];
                     if(prefix === 'lm') {
-                        ['lm-data','lm-timeA','lm-timeB','lm-campeonato','lm-placar','lm-minuto','lm-oddE','lm-oddS','lm-entrada','lm-saida'].forEach((id,idx) => {
-                            const keys = ['data','tA','tB','lg','pl','min','oe','os','entrada','saida'];
-                            document.getElementById(id).value = r[keys[idx]];
-                        });
+                        document.getElementById('lm-data').value = r.data; document.getElementById('lm-timeA').value = r.tA;
+                        document.getElementById('lm-timeB').value = r.tB; document.getElementById('lm-campeonato').value = r.lg;
+                        document.getElementById('lm-placar').value = r.pl; document.getElementById('lm-minuto').value = r.min;
+                        document.getElementById('lm-oddE').value = r.oe; document.getElementById('lm-oddS').value = r.os;
+                        document.getElementById('lm-entrada').value = r.entrada; document.getElementById('lm-saida').value = r.saida;
                         document.getElementById('display').innerText = r.dr;
                     } else {
-                        ['cs-data','cs-timeA','cs-timeB','cs-campeonato','cs-placar-sel','cs-oddE','cs-oddS','cs-entrada','cs-saida'].forEach((id,idx) => {
-                            const keys = ['data','tA','tB','lg','plEscolha','oe','os','entrada','saida'];
-                            document.getElementById(id).value = r[keys[idx]];
-                        });
+                        document.getElementById('cs-data').value = r.data; document.getElementById('cs-timeA').value = r.tA;
+                        document.getElementById('cs-timeB').value = r.tB; document.getElementById('cs-campeonato').value = r.lg;
+                        document.getElementById('cs-placar-sel').value = r.plEscolha; document.getElementById('cs-oddE').value = r.oe;
+                        document.getElementById('cs-oddS').value = r.os; document.getElementById('cs-entrada').value = r.entrada;
+                        document.getElementById('cs-saida').value = r.saida;
                     }
-                    data.splice(i,1);
-                    set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), data);
+                    data.splice(i,1); set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), data);
                 };
             });
         }
 
         function updateChart(chart, data) {
+            if(!chart) return;
             let acc = 0; const pts = [0], lbs = ["0"];
             data.forEach((r, i) => { acc += (r.saida - r.entrada); pts.push(acc); lbs.push(i+1); });
             chart.data.labels = lbs; chart.data.datasets[0].data = pts; chart.update();
         }
 
-        // Botoes
+        // --- BOTÕES E TIMER ---
         document.getElementById('btn-add-lm').onclick = () => {
             tradesLM.push({ data: document.getElementById('lm-data').value, tA: document.getElementById('lm-timeA').value.toUpperCase(), tB: document.getElementById('lm-timeB').value.toUpperCase(), lg: document.getElementById('lm-campeonato').value, pl: document.getElementById('lm-placar').value, min: document.getElementById('lm-minuto').value, oe: document.getElementById('lm-oddE').value, os: document.getElementById('lm-oddS').value, entrada: parseFloat(document.getElementById('lm-entrada').value) || 0, saida: parseFloat(document.getElementById('lm-saida').value) || 0, dr: document.getElementById('display').innerText });
             set(ref(db, 'trades_under'), tradesLM);
@@ -246,10 +303,14 @@
 
         function limpar() { document.querySelectorAll('input:not([type="date"])').forEach(i => i.value = ''); }
 
-        // Timer Events
-        document.getElementById('timer-start').onclick = () => { if(!timerInterval){ startTime = Date.now() - elapsedTime; timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; timeDisplay.innerText = timeToString(elapsedTime); }, 10); } };
+        let startTime, elapsedTime = 0, timerInterval = null;
+        document.getElementById('timer-start').onclick = () => { if(!timerInterval){ startTime = Date.now() - elapsedTime; timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; document.getElementById("display").innerText = timeToString(elapsedTime); }, 10); } };
         document.getElementById('timer-stop').onclick = () => { clearInterval(timerInterval); timerInterval = null; };
-        document.getElementById('timer-reset').onclick = () => { clearInterval(timerInterval); timerInterval = null; elapsedTime = 0; timeDisplay.innerText = "00:00:000"; };
+        document.getElementById('timer-reset').onclick = () => { clearInterval(timerInterval); timerInterval = null; elapsedTime = 0; document.getElementById("display").innerText = "00:00:000"; };
+        function timeToString(t) {
+            let mm = Math.floor(t / 60000), ss = Math.floor((t % 60000) / 1000), ms = Math.floor(t % 1000);
+            return `${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}:${ms.toString().padStart(3, '0')}`;
+        }
 
         // Navegação
         document.getElementById('menu-lm').onclick = () => { document.getElementById('live-market').classList.add('active'); document.getElementById('correct-score').classList.remove('active'); document.getElementById('menu-lm').classList.add('active'); document.getElementById('menu-cs').classList.remove('active'); };
