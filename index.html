@@ -13,55 +13,64 @@
             --edit: #ffcc00; --text-white: #ffffff; --text-gray: #8a99a6; --border: #2d3841;
             --cs-accent: #00d4ff;
         }
-        body { font-family: 'Roboto', sans-serif; background: var(--bg-body); color: var(--text-white); margin: 0; display: flex; min-height: 100vh; overflow: hidden; }
 
-        #auth-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-body); display: flex; align-items: center; justify-content: center; z-index: 10000;
+        /* Reset e Base */
+        body { font-family: 'Roboto', sans-serif; background: var(--bg-body); color: var(--text-white); margin: 0; display: flex; min-height: 100vh; flex-direction: row; }
+
+        /* Responsividade da Estrutura */
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100% !important; height: auto !important; border-right: none !important; border-bottom: 1px solid var(--border); padding: 10px !important; }
+            .main-content { padding: 20px !important; }
+            .form-grid { grid-template-columns: 1fr 1fr !important; }
+            .stats-header { grid-template-columns: 1fr 1fr !important; }
         }
-        .auth-box {
-            background: var(--bg-card); padding: 40px; border-radius: 12px; border: 1px solid var(--accent);
-            text-align: center; width: 320px; box-shadow: 0 0 20px rgba(177, 255, 0, 0.2);
-        }
-        .auth-box h2 { color: var(--accent); font-family: 'Roboto Condensed'; margin-bottom: 25px; }
+
+        /* Tela de Login */
+        #auth-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .auth-box { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--accent); text-align: center; width: 90%; max-width: 320px; }
         .auth-box input { width: 100%; margin-bottom: 15px; box-sizing: border-box; }
         
-        #main-app { display: none; width: 100%; height: 100vh; }
+        #main-app { display: none; width: 100%; min-height: 100vh; }
         body.logged-in #auth-container { display: none; }
-        body.logged-in #main-app { display: flex; }
+        body.logged-in #main-app { display: flex; flex-direction: inherit; }
 
-        .sidebar { width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 20px; flex-shrink: 0; }
-        .logo { font-family: 'Roboto Condensed'; font-size: 22px; color: var(--accent); margin-bottom: 40px; display: block; text-decoration: none; padding-top: 20px; }
-        .menu-item { padding: 12px; border-radius: 6px; color: var(--text-gray); cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-size: 13px; font-weight: bold; }
-        .menu-item:hover, .menu-item.active { background: var(--bg-card); color: var(--accent); }
-        .main-content { flex: 1; padding: 60px 40px 40px 40px; overflow-y: auto; height: 100vh; scroll-behavior: smooth; }
+        /* Sidebar */
+        .sidebar { width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 20px; flex-shrink: 0; display: flex; flex-direction: column; }
+        .logo { font-family: 'Roboto Condensed'; font-size: 20px; color: var(--accent); margin-bottom: 30px; text-decoration: none; text-align: center; }
+        .menu-item { padding: 12px; border-radius: 6px; color: var(--text-gray); cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-size: 13px; font-weight: bold; text-align: center; }
+        .menu-item.active { background: var(--bg-card); color: var(--accent); }
+
+        /* Conteúdo */
+        .main-content { flex: 1; padding: 40px; overflow-x: hidden; }
         .page { display: none; }
         .page.active { display: block; }
-        h3 { font-family: 'Roboto Condensed'; font-size: 18px; color: var(--accent); text-transform: uppercase; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border); letter-spacing: 1px; text-align: center; }
-        .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 40px; }
+
+        /* Estatísticas */
+        .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 30px; }
         .stat-box { background: var(--bg-card); padding: 15px; border-radius: 8px; border-bottom: 3px solid var(--accent); text-align: center; }
-        .stat-box small { color: var(--text-gray); font-size: 9px; text-transform: uppercase; display: block; line-height: 1.2; margin-bottom: 5px; }
-        .stat-box div { font-size: 18px; font-weight: bold; }
-        .chart-container { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 35px; height: 280px; width: 100%; box-sizing: border-box; }
-        .market-card { background: var(--bg-card); border-radius: 12px; padding: 30px; margin-bottom: 35px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, auto)); gap: 15px; width: 100%; justify-content: center; align-items: end; }
-        .field-group { display: flex; flex-direction: column; gap: 10px; align-items: center; }
-        label { color: var(--text-gray); font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        input, select { background: var(--bg-input); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 4px; outline: none; text-align: center; width: 140px; font-size: 13px; }
-        .timer-box { background: #000; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid var(--border); width: 100%; max-width: 400px; margin: 30px auto; }
-        .time-display { font-size: 32px; font-weight: bold; font-family: monospace; color: var(--accent); margin-bottom: 10px; }
-        .btn-submit { display: block; background: var(--accent); color: black; border: none; padding: 18px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin: 10px auto; font-size: 15px; width: 100%; max-width: 500px; }
-        .table-card { background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); padding: 20px; margin-bottom: 40px; }
-        table { width: 100%; border-collapse: collapse; text-align: center; }
-        th { background: #232e38; color: var(--text-gray); font-size: 10px; padding: 15px; text-transform: uppercase; }
-        td { padding: 12px 5px; border-bottom: 1px solid var(--border); font-size: 12px; }
-        .pos { color: var(--accent); font-weight: bold; }
-        .neg { color: var(--danger); font-weight: bold; }
-        .btn-action { background: none; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 5px 8px; border-radius: 3px; cursor: pointer; text-transform: uppercase; font-size: 9px; margin: 0 2px; }
-        .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); width: 100%; margin-top: 20px; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .page-cs h3 { color: var(--cs-accent); border-bottom-color: var(--cs-accent); }
-        .page-cs .stat-box { border-bottom-color: var(--cs-accent); }
-        .page-cs .market-card, .page-cs .table-card { border-color: var(--cs-accent); }
+        .stat-box small { color: var(--text-gray); font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .stat-box div { font-size: 16px; font-weight: bold; }
+
+        /* Gráficos e Cards */
+        .chart-container { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px; height: 250px; }
+        .market-card { background: var(--bg-card); border-radius: 12px; padding: 20px; margin-bottom: 30px; border: 1px solid var(--border); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; }
+        
+        .field-group { display: flex; flex-direction: column; gap: 5px; }
+        label { color: var(--text-gray); font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        input, select { background: var(--bg-input); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 4px; outline: none; font-size: 13px; width: 100%; box-sizing: border-box; }
+
+        /* Tabelas Responsivas */
+        .table-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; margin-bottom: 40px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: #232e38; color: var(--text-gray); font-size: 10px; padding: 12px; text-transform: uppercase; }
+        td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 12px; text-align: center; }
+
+        /* Botões */
+        .btn-submit { display: block; background: var(--accent); color: black; border: none; padding: 15px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 20px; }
+        .btn-action { background: none; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 10px; }
+        .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); width: 100%; margin-top: auto; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -69,103 +78,83 @@
     <div id="auth-container">
         <div class="auth-box">
             <h2>ELITE ACCESS</h2>
-            <input type="email" id="login-email" placeholder="Seu E-mail">
-            <input type="password" id="login-password" placeholder="Sua Senha">
-            <button class="btn-submit" id="btn-login">ACESSAR PAINEL</button>
-            <p id="auth-error" style="color: var(--danger); font-size: 12px; margin-top: 15px; display: none;">Erro ao acessar. Verifique os dados.</p>
+            <input type="email" id="login-email" placeholder="E-mail">
+            <input type="password" id="login-password" placeholder="Senha">
+            <button class="btn-submit" id="btn-login">ENTRAR</button>
+            <p id="auth-error" style="color: var(--danger); font-size: 12px; margin-top: 15px; display: none;">Credenciais inválidas.</p>
         </div>
     </div>
 
     <div id="main-app">
         <aside class="sidebar">
-            <a href="#" class="logo">⚡ ELITE TRADER</a>
+            <a href="#" class="logo">⚡ ELITE CONECT</a>
             <div class="menu-item active" id="menu-lm">⚽ UNDER LIMIT</div>
             <div class="menu-item" id="menu-cs">🎯 ALAVANCAGEM CS</div>
-            <button class="btn-logout" id="btn-logout">LOGOUT / SAIR</button>
+            <button class="btn-logout" id="btn-logout">SAIR</button>
         </aside>
 
         <main class="main-content" id="mainScroll">
             <div id="live-market" class="page active">
                 <div class="stats-header">
-                    <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
-                    <div class="stat-box"><small>Stake Inicial</small><div>R$ 40,00</div></div>
-                    <div class="stat-box"><small>% Lucro s/ Stake</small><div id="lm-perc-banca">0.00%</div></div>
-                    <div class="stat-box"><small>ROI % Under</small><div id="lm-roi">0.00%</div></div>
-                    <div class="stat-box"><small>Trades</small><div id="lm-trades">0</div></div>
+                    <div class="stat-box"><small>Total P/L</small><div id="lm-lucro">R$ 0,00</div></div>
+                    <div class="stat-box"><small>% Lucro</small><div id="lm-perc-banca">0.00%</div></div>
+                    <div class="stat-box"><small>ROI</small><div id="lm-roi">0.00%</div></div>
                 </div>
                 <div class="chart-container"><canvas id="profitChartLM"></canvas></div>
                 <section class="market-card">
-                    <h3>Registrar Apostas Under Limit</h3>
+                    <h3>Registro Under Limit</h3>
                     <div class="form-grid">
                         <div class="field-group"><label>Data</label><input type="date" id="lm-data"></div>
-                        <div class="field-group"><label>Mandante</label><input type="text" id="lm-timeA" list="global-teams" placeholder="Mandante"></div>
-                        <div class="field-group"><label>Visitante</label><input type="text" id="lm-timeB" list="global-teams" placeholder="Visitante"></div>
-                        <div class="field-group"><label>Liga</label><input type="text" id="lm-campeonato" list="camp-list" placeholder="Liga"></div>
-                        <div class="field-group"><label>Placar</label><input type="text" id="lm-placar" placeholder="0-0"></div>
-                        <div class="field-group"><label>Minuto</label><input type="number" id="lm-minuto" placeholder="Min"></div>
-                        <div class="field-group"><label>Odd Entrada(Back)</label><input type="number" step="0.01" id="lm-oddE" placeholder="1.00"></div>
-                        <div class="field-group"><label>Odd Saida(Lay)</label><input type="number" step="0.01" id="lm-oddS" placeholder="1.00"></div>
-                        <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada" placeholder="0.00"></div>
-                        <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida" placeholder="0.00"></div>
+                        <div class="field-group"><label>Mandante</label><input type="text" id="lm-timeA"></div>
+                        <div class="field-group"><label>Visitante</label><input type="text" id="lm-timeB"></div>
+                        <div class="field-group"><label>Odd In</label><input type="number" step="0.01" id="lm-oddE"></div>
+                        <div class="field-group"><label>Odd Out</label><input type="number" step="0.01" id="lm-oddS"></div>
+                        <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada"></div>
+                        <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida"></div>
                     </div>
-                    <div class="timer-box">
-                        <div id="display" class="time-display">00:00:000</div>
-                        <button class="btn-action" id="timer-start">Start</button>
-                        <button class="btn-action" id="timer-stop">Stop</button>
-                        <button class="btn-action" id="timer-reset">Reset</button>
-                    </div>
-                    <button class="btn-submit" id="btn-add-lm">GRAVAR NA NUVEM</button>
+                    <button class="btn-submit" id="btn-add-lm">SALVAR UNDER</button>
                 </section>
                 <div class="table-card">
-                    <h3>Historico Under Limit</h3>
-                    <table id="tabelaLM"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada(Back)</th><th>Odd Saida(Lay)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                    <table id="tabelaLM">
+                        <thead>
+                            <tr><th>Data</th><th>Evento</th><th>In</th><th>Out</th><th>Stake</th><th>P/L</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
 
             <div id="correct-score" class="page page-cs">
                 <div class="stats-header">
-                    <div class="stat-box"><small>Total P/L CS</small><div id="cs-lucro" style="color: var(--cs-accent);">R$ 0,00</div></div>
-                    <div class="stat-box"><small>Stake Inicial</small><div style="color: var(--cs-accent);">R$ 40,00</div></div>
-                    <div class="stat-box"><small>% Lucro s/ Stake</small><div id="cs-perc-banca" style="color: var(--cs-accent);">0.00%</div></div>
-                    <div class="stat-box"><small>ROI % CS</small><div id="cs-roi" style="color: var(--cs-accent);">0.00%</div></div>
-                    <div class="stat-box"><small>Acertos</small><div id="cs-count" style="color: var(--cs-accent);">0</div></div>
+                    <div class="stat-box"><small>Total P/L CS</small><div id="cs-lucro" style="color:var(--cs-accent)">R$ 0,00</div></div>
+                    <div class="stat-box"><small>% Lucro</small><div id="cs-perc-banca" style="color:var(--cs-accent)">0.00%</div></div>
                 </div>
                 <div class="chart-container"><canvas id="profitChartCS"></canvas></div>
                 <section class="market-card">
-                    <h3>Registrar Apostas Correct Score</h3>
+                    <h3>Registro Correct Score</h3>
                     <div class="form-grid">
                         <div class="field-group"><label>Data</label><input type="date" id="cs-data"></div>
-                        <div class="field-group"><label>Mandante</label><input type="text" id="cs-timeA" list="global-teams" placeholder="Mandante"></div>
-                        <div class="field-group"><label>Visitante</label><input type="text" id="cs-timeB" list="global-teams" placeholder="Visitante"></div>
-                        <div class="field-group"><label>Liga</label><input type="text" id="cs-campeonato" list="camp-list" placeholder="Liga"></div>
-                        <div class="field-group"><label>Placar</label>
-                            <select id="cs-placar-sel">
-                                <option value="1-0">1-0</option><option value="2-0">2-0</option><option value="2-1">2-1</option>
-                                <option value="0-1">0-1</option><option value="0-2">0-2</option><option value="1-2">1-2</option>
-                                <option value="1-1">1-1</option><option value="Outros">Outros</option>
-                            </select>
-                        </div>
-                        <div class="field-group"><label>Odd Entrada(Lay)</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
-                        <div class="field-group"><label>Odd Saida(Back)</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
-                        <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada" placeholder="0.00"></div>
-                        <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida" placeholder="0.00"></div>
+                        <div class="field-group"><label>Evento</label><input type="text" id="cs-timeA"></div>
+                        <div class="field-group"><label>Odd In</label><input type="number" step="0.01" id="cs-oddE"></div>
+                        <div class="field-group"><label>Odd Out</label><input type="number" step="0.01" id="cs-oddS"></div>
+                        <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada"></div>
+                        <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida"></div>
                     </div>
-                    <button class="btn-submit" id="btn-add-cs" style="background: var(--cs-accent);">GRAVAR NA NUVEM</button>
+                    <button class="btn-submit" id="btn-add-cs" style="background:var(--cs-accent)">SALVAR CS</button>
                 </section>
                 <div class="table-card">
-                    <h3>Historico Correct Score</h3>
-                    <table id="tabelaCS"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada(Lay)</th><th>Odd Saida(Back)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                    <table id="tabelaCS">
+                        <thead>
+                            <tr><th>Data</th><th>Evento</th><th>In</th><th>Out</th><th>Stake</th><th>P/L</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </main>
     </div>
 
-    <datalist id="global-teams">
-        <option value="Flamengo"><option value="Palmeiras"><option value="Man City"><option value="Real Madrid">
-    </datalist>
-    <datalist id="camp-list">
-        <option value="Brasileirão Série A"><option value="Premier League"><option value="La Liga">
-    </datalist>
+    
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
@@ -185,22 +174,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-
         const STAKE_FIXA = 40.00;
-        let tradesLM = [], tradesCS = [];
 
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-
-        btnLogin.onclick = () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(err => {
-                document.getElementById('auth-error').style.display = 'block';
-            });
+        // Login/Logout
+        document.getElementById('btn-login').onclick = () => {
+            signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
+            .catch(() => document.getElementById('auth-error').style.display = 'block');
         };
-
-        btnLogout.onclick = () => signOut(auth);
+        document.getElementById('btn-logout').onclick = () => signOut(auth);
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -211,14 +192,14 @@
             }
         });
 
+        let tradesLM = [], tradesCS = [];
         let chartLM, chartCS;
 
         function iniciarApp() {
             if(!chartLM) {
-                chartLM = new Chart(document.getElementById('profitChartLM').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L Under', data: [], borderColor: '#b1ff00', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false } });
-                chartCS = new Chart(document.getElementById('profitChartCS').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L CS', data: [], borderColor: '#00d4ff', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false } });
+                chartLM = new Chart(document.getElementById('profitChartLM').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L', data: [], borderColor: '#b1ff00' }] }, options: { responsive: true, maintainAspectRatio: false } });
+                chartCS = new Chart(document.getElementById('profitChartCS').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L', data: [], borderColor: '#00d4ff' }] }, options: { responsive: true, maintainAspectRatio: false } });
             }
-            
             onValue(ref(db, 'trades_under'), (snap) => { tradesLM = snap.val() || []; atualizarInterface(); });
             onValue(ref(db, 'trades_cs'), (snap) => { tradesCS = snap.val() || []; atualizarInterface(); });
         }
@@ -226,91 +207,69 @@
         function atualizarInterface() {
             renderTable('tabelaLM', tradesLM, 'lm');
             renderTable('tabelaCS', tradesCS, 'cs');
-            updateChart(chartLM, tradesLM);
-            updateChart(chartCS, tradesCS);
         }
 
         function renderTable(id, data, prefix) {
             const tbody = document.querySelector(`#${id} tbody`);
             tbody.innerHTML = '';
-            let totalPL = 0, totalStake = 0;
+            let totalPL = 0;
             data.forEach((r, i) => {
-                const pl = r.saida - r.entrada; totalPL += pl; totalStake += r.entrada;
+                const pl = r.saida - r.entrada;
+                totalPL += pl;
                 tbody.innerHTML += `<tr>
-                    <td>${r.data.split('-').reverse().slice(0,2).join('/')}</td>
-                    <td>${r.tA} X ${r.tB}</td>
-                    <td>${r.lg}</td>
-                    <td>${prefix === 'lm' ? r.pl : r.plEscolha}</td>
-                    <td>${r.oe || '1.00'}</td>
-                    <td>${r.os || '1.00'}</td>
-                    <td>R$ ${r.entrada.toFixed(2)}</td>
-                    <td>R$ ${r.saida.toFixed(2)}</td>
-                    <td class="${pl >= 0 ? 'pos' : 'neg'}">R$ ${pl.toFixed(2)}</td>
-                    ${prefix === 'lm' ? `<td>${r.dr}</td>` : ''}
-                    <td><button class="btn-action" id="edit-${prefix}-${i}">EDIT</button><button class="btn-action" id="del-${prefix}-${i}">DEL</button></td>
+                    <td>${r.data}</td><td>${r.tA}</td><td>${r.oe}</td><td>${r.os}</td>
+                    <td>${r.entrada}</td><td class="${pl>=0?'pos':'neg'}">${pl.toFixed(2)}</td>
+                    <td><button class="btn-action" onclick="window.del('${prefix}', ${i})">DEL</button></td>
                 </tr>`;
             });
             document.getElementById(`${prefix}-lucro`).innerText = `R$ ${totalPL.toFixed(2)}`;
-            document.getElementById(`${prefix}-perc-banca`).innerText = `${(totalPL / STAKE_FIXA * 100).toFixed(2)}%`;
-            document.getElementById(`${prefix}-roi`).innerText = totalStake > 0 ? (totalPL/totalStake*100).toFixed(2) + "%" : "0.00%";
-            
-            data.forEach((_, i) => {
-                document.getElementById(`del-${prefix}-${i}`).onclick = () => { if(confirm("Excluir?")) { data.splice(i,1); set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), data); }};
-                document.getElementById(`edit-${prefix}-${i}`).onclick = () => {
-                    const r = data[i];
-                    if(prefix === 'lm') {
-                        document.getElementById('lm-data').value = r.data; document.getElementById('lm-timeA').value = r.tA;
-                        document.getElementById('lm-timeB').value = r.tB; document.getElementById('lm-campeonato').value = r.lg;
-                        document.getElementById('lm-placar').value = r.pl; document.getElementById('lm-minuto').value = r.min;
-                        document.getElementById('lm-oddE').value = r.oe; document.getElementById('lm-oddS').value = r.os;
-                        document.getElementById('lm-entrada').value = r.entrada; document.getElementById('lm-saida').value = r.saida;
-                        document.getElementById('display').innerText = r.dr;
-                    } else {
-                        document.getElementById('cs-data').value = r.data; document.getElementById('cs-timeA').value = r.tA;
-                        document.getElementById('cs-timeB').value = r.tB; document.getElementById('cs-campeonato').value = r.lg;
-                        document.getElementById('cs-placar-sel').value = r.plEscolha; document.getElementById('cs-oddE').value = r.oe;
-                        document.getElementById('cs-oddS').value = r.os; document.getElementById('cs-entrada').value = r.entrada;
-                        document.getElementById('cs-saida').value = r.saida;
-                    }
-                    data.splice(i,1); set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), data);
-                };
-            });
+            document.getElementById(`${prefix}-perc-banca`).innerText = `${(totalPL/STAKE_FIXA*100).toFixed(2)}%`;
         }
 
-        function updateChart(chart, data) {
-            if(!chart) return;
-            let acc = 0; const pts = [0], lbs = ["0"];
-            data.forEach((r, i) => { acc += (r.saida - r.entrada); pts.push(acc); lbs.push(i+1); });
-            chart.data.labels = lbs; chart.data.datasets[0].data = pts; chart.update();
-        }
+        window.del = (prefix, i) => {
+            if(!confirm("Excluir?")) return;
+            let target = prefix === 'lm' ? tradesLM : tradesCS;
+            target.splice(i, 1);
+            set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), target);
+        };
 
         document.getElementById('btn-add-lm').onclick = () => {
-            tradesLM.push({ data: document.getElementById('lm-data').value, tA: document.getElementById('lm-timeA').value.toUpperCase(), tB: document.getElementById('lm-timeB').value.toUpperCase(), lg: document.getElementById('lm-campeonato').value, pl: document.getElementById('lm-placar').value, min: document.getElementById('lm-minuto').value, oe: document.getElementById('lm-oddE').value, os: document.getElementById('lm-oddS').value, entrada: parseFloat(document.getElementById('lm-entrada').value) || 0, saida: parseFloat(document.getElementById('lm-saida').value) || 0, dr: document.getElementById('display').innerText });
+            tradesLM.push({
+                data: document.getElementById('lm-data').value,
+                tA: document.getElementById('lm-timeA').value,
+                oe: document.getElementById('lm-oddE').value,
+                os: document.getElementById('lm-oddS').value,
+                entrada: parseFloat(document.getElementById('lm-entrada').value),
+                saida: parseFloat(document.getElementById('lm-saida').value)
+            });
             set(ref(db, 'trades_under'), tradesLM);
-            limpar();
         };
 
         document.getElementById('btn-add-cs').onclick = () => {
-            tradesCS.push({ data: document.getElementById('cs-data').value, tA: document.getElementById('cs-timeA').value.toUpperCase(), tB: document.getElementById('cs-timeB').value.toUpperCase(), lg: document.getElementById('cs-campeonato').value, plEscolha: document.getElementById('cs-placar-sel').value, oe: document.getElementById('cs-oddE').value, os: document.getElementById('cs-oddS').value, entrada: parseFloat(document.getElementById('cs-entrada').value) || 0, saida: parseFloat(document.getElementById('cs-saida').value) || 0 });
+            tradesCS.push({
+                data: document.getElementById('cs-data').value,
+                tA: document.getElementById('cs-timeA').value,
+                oe: document.getElementById('cs-oddE').value,
+                os: document.getElementById('cs-oddS').value,
+                entrada: parseFloat(document.getElementById('cs-entrada').value),
+                saida: parseFloat(document.getElementById('cs-saida').value)
+            });
             set(ref(db, 'trades_cs'), tradesCS);
-            limpar();
         };
 
-        function limpar() { document.querySelectorAll('input:not([type="date"])').forEach(i => i.value = ''); }
-
-        let startTime, elapsedTime = 0, timerInterval = null;
-        document.getElementById('timer-start').onclick = () => { if(!timerInterval){ startTime = Date.now() - elapsedTime; timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; document.getElementById("display").innerText = timeToString(elapsedTime); }, 10); } };
-        document.getElementById('timer-stop').onclick = () => { clearInterval(timerInterval); timerInterval = null; };
-        document.getElementById('timer-reset').onclick = () => { clearInterval(timerInterval); timerInterval = null; elapsedTime = 0; document.getElementById("display").innerText = "00:00:000"; };
-        function timeToString(t) {
-            let mm = Math.floor(t / 60000), ss = Math.floor((t % 60000) / 1000), ms = Math.floor(t % 1000);
-            return `${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}:${ms.toString().padStart(3, '0')}`;
-        }
-
-        document.getElementById('menu-lm').onclick = () => { document.getElementById('live-market').classList.add('active'); document.getElementById('correct-score').classList.remove('active'); document.getElementById('menu-lm').classList.add('active'); document.getElementById('menu-cs').classList.remove('active'); };
-        document.getElementById('menu-cs').onclick = () => { document.getElementById('correct-score').classList.add('active'); document.getElementById('live-market').classList.remove('active'); document.getElementById('menu-cs').classList.add('active'); document.getElementById('menu-lm').classList.remove('active'); };
+        // Navegação
+        document.getElementById('menu-lm').onclick = () => {
+            document.getElementById('live-market').classList.add('active');
+            document.getElementById('correct-score').classList.remove('active');
+            document.getElementById('menu-lm').classList.add('active');
+            document.getElementById('menu-cs').classList.remove('active');
+        };
+        document.getElementById('menu-cs').onclick = () => {
+            document.getElementById('correct-score').classList.add('active');
+            document.getElementById('live-market').classList.remove('active');
+            document.getElementById('menu-cs').classList.add('active');
+            document.getElementById('menu-lm').classList.remove('active');
+        };
     </script>
 </body>
 </html>
-
-
