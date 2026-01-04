@@ -35,18 +35,15 @@
         body.logged-in #auth-container { display: none; }
         body.logged-in #main-app { display: flex; flex-direction: inherit; }
 
-        /* Sidebar */
         .sidebar { width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 20px; flex-shrink: 0; display: flex; flex-direction: column; }
         .logo { font-family: 'Roboto Condensed'; font-size: 22px; color: var(--accent); margin-bottom: 40px; text-decoration: none; padding-top: 20px; text-align: center; }
         .menu-item { padding: 12px; border-radius: 6px; color: var(--text-gray); cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-size: 13px; font-weight: bold; }
         .menu-item:hover, .menu-item.active { background: var(--bg-card); color: var(--accent); }
 
-        /* Conteúdo Principal */
         .main-content { flex: 1; padding: 60px 40px; overflow-y: auto; scroll-behavior: smooth; }
         .page { display: none; }
         .page.active { display: block; }
 
-        /* Estatísticas e Cards */
         h3 { font-family: 'Roboto Condensed'; font-size: 18px; color: var(--accent); text-transform: uppercase; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border); letter-spacing: 1px; text-align: center; }
         .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 40px; }
         .stat-box { background: var(--bg-card); padding: 15px; border-radius: 8px; border-bottom: 3px solid var(--accent); text-align: center; }
@@ -67,7 +64,6 @@
         .btn-submit { display: block; background: var(--accent); color: black; border: none; padding: 18px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin: 10px auto; font-size: 15px; width: 100%; max-width: 500px; }
         .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); width: 100%; margin-top: auto; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
 
-        /* Tabelas Responsivas */
         .table-card { background: var(--bg-card); border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); padding: 20px; margin-bottom: 40px; }
         table { width: 100%; border-collapse: collapse; text-align: center; min-width: 800px; }
         th { background: #232e38; color: var(--text-gray); font-size: 10px; padding: 15px; text-transform: uppercase; }
@@ -120,8 +116,8 @@
                         <div class="field-group"><label>Liga</label><input type="text" id="lm-campeonato" list="camp-list" placeholder="Liga"></div>
                         <div class="field-group"><label>Placar</label><input type="text" id="lm-placar" placeholder="0-0"></div>
                         <div class="field-group"><label>Minuto</label><input type="number" id="lm-minuto" placeholder="Min"></div>
-                        <div class="field-group"><label>Odd Entrada(Back)</label><input type="number" step="0.01" id="lm-oddE" placeholder="1.00"></div>
-                        <div class="field-group"><label>Odd Saida(Lay)</label><input type="number" step="0.01" id="lm-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd In</label><input type="number" step="0.01" id="lm-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Out</label><input type="number" step="0.01" id="lm-oddS" placeholder="1.00"></div>
                         <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada" placeholder="0.00"></div>
                         <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida" placeholder="0.00"></div>
                     </div>
@@ -138,7 +134,7 @@
                     <h3>Historico Hunter Limit</h3>
                     <table id="tabelaLM">
                         <thead>
-                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada(Back)</th><th>Odd Saida(Lay)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr>
+                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd In</th><th>Odd Out</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -169,8 +165,8 @@
                                 <option value="1-1">1-1</option><option value="Outros">Outros</option>
                             </select>
                         </div>
-                        <div class="field-group"><label>Odd Entrada(Lay)</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
-                        <div class="field-group"><label>Odd Saida(Back)</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd In</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Out</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
                         <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada" placeholder="0.00"></div>
                         <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida" placeholder="0.00"></div>
                     </div>
@@ -181,7 +177,7 @@
                     <h3>Historico Correct Score</h3>
                     <table id="tabelaCS">
                         <thead>
-                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada(Lay)</th><th>Odd Saida(Back)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr>
+                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd In</th><th>Odd Out</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -191,16 +187,12 @@
     </div>
 
     <datalist id="global-teams">
-        <option value="Flamengo"><option value="Palmeiras"><option value="São Paulo"><option value="Corinthians"><option value="Santos"><option value="Grêmio"><option value="Internacional"><option value="Cruzeiro"><option value="Vasco"><option value="Fluminense"><option value="Botafogo"><option value="Atlético-MG"><option value="Athletico-PR"><option value="Bahia"><option value="Fortaleza"><option value="Coritiba"><option value="Goiás"><option value="Cuiabá"><option value="América-MG"><option value="Red Bull Bragantino"><option value="Vitória"><option value="Sport"><option value="Ceará"><option value="Juventude">
-        <option value="Real Madrid"><option value="Barcelona"><option value="Atlético de Madrid"><option value="Sevilla"><option value="Real Sociedad"><option value="Villarreal"><option value="Betis"><option value="Athletic Bilbao"><option value="Valencia">
-        <option value="Man City"><option value="Arsenal"><option value="Liverpool"><option value="Man United"><option value="Chelsea"><option value="Tottenham"><option value="Newcastle"><option value="Aston Villa"><option value="Brighton">
-        <option value="Bayern Munique"><option value="Dortmund"><option value="Leverkusen"><option value="RB Leipzig"><option value="Eintracht Frankfurt">
-        <option value="Inter Milão"><option value="Milan"><option value="Juventus"><option value="Napoli"><option value="Roma"><option value="Lazio"><option value="Atalanta">
-        <option value="River Plate"><option value="Boca Juniors"><option value="Racing"><option value="Independiente"><option value="San Lorenzo">
+        <option value="Flamengo"><option value="Palmeiras"><option value="São Paulo"><option value="Corinthians">
+        <option value="Real Madrid"><option value="Barcelona"><option value="Man City">
     </datalist>
 
     <datalist id="camp-list">
-        <option value="Brasileirão Série A"><option value="Brasileirão Série B"><option value="Copa do Brasil"><option value="Libertadores"><option value="Copa Sul-Americana"><option value="Premier League"><option value="La Liga"><option value="Bundesliga"><option value="Serie A (ITA)"><option value="Ligue 1 (FRA)"><option value="Champions League"><option value="Europa League">
+        <option value="Brasileirão Série A"><option value="Premier League"><option value="La Liga">
     </datalist>
 
     <script type="module">
@@ -223,7 +215,6 @@
         const auth = getAuth(app);
         const STAKE_FIXA = 40.00;
 
-        // Login / Logout
         document.getElementById('btn-login').onclick = () => {
             signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
             .catch(() => document.getElementById('auth-error').style.display = 'block');
@@ -257,9 +248,16 @@
         function renderTable(id, data, prefix) {
             const tbody = document.querySelector(`#${id} tbody`);
             tbody.innerHTML = '';
-            let totalPL = 0, totalStake = 0;
+            let totalPL = 0, totalStake = 0, acertosCount = 0;
+
             data.forEach((r, i) => {
-                const pl = r.saida - r.entrada; totalPL += pl; totalStake += r.entrada;
+                const pl = r.saida - r.entrada; 
+                totalPL += pl; 
+                totalStake += r.entrada;
+                
+                // Lógica de contagem de acertos: se o P/L for positivo
+                if (pl > 0) acertosCount++;
+
                 tbody.innerHTML += `<tr>
                     <td>${r.data.split('-').reverse().slice(0,2).join('/')}</td>
                     <td>${r.tA} X ${r.tB}</td>
@@ -274,10 +272,19 @@
                     <td><button class="btn-action" id="edit-${prefix}-${i}">EDIT</button><button class="btn-action" id="del-${prefix}-${i}">DEL</button></td>
                 </tr>`;
             });
+
             document.getElementById(`${prefix}-lucro`).innerText = `R$ ${totalPL.toFixed(2)}`;
             document.getElementById(`${prefix}-perc-banca`).innerText = `${(totalPL / STAKE_FIXA * 100).toFixed(2)}%`;
             document.getElementById(`${prefix}-roi`).innerText = totalStake > 0 ? (totalPL/totalStake*100).toFixed(2) + "%" : "0.00%";
             
+            // Atualiza os contadores de Trades e Acertos
+            if (prefix === 'lm') {
+                document.getElementById('lm-trades').innerText = data.length;
+            } else {
+                document.getElementById('cs-count').innerText = acertosCount;
+            }
+            
+            // Reatribui eventos de botões
             data.forEach((_, i) => {
                 document.getElementById(`del-${prefix}-${i}`).onclick = () => { if(confirm("Excluir?")) { data.splice(i,1); set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), data); }};
                 document.getElementById(`edit-${prefix}-${i}`).onclick = () => {
@@ -338,4 +345,3 @@
     </script>
 </body>
 </html>
-
