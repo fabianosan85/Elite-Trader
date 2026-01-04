@@ -14,221 +14,72 @@
             --cs-accent: #00d4ff;
         }
         body { font-family: 'Roboto', sans-serif; background: var(--bg-body); color: var(--text-white); margin: 0; display: flex; min-height: 100vh; overflow: hidden; }
+        
         .sidebar { width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 20px; flex-shrink: 0; }
         .logo { font-family: 'Roboto Condensed'; font-size: 22px; color: var(--accent); margin-bottom: 40px; display: block; text-decoration: none; padding-top: 20px; }
         .menu-item { padding: 12px; border-radius: 6px; color: var(--text-gray); cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-size: 13px; font-weight: bold; }
         .menu-item:hover, .menu-item.active { background: var(--bg-card); color: var(--accent); }
+
         .main-content { flex: 1; padding: 60px 40px 40px 40px; overflow-y: auto; height: 100vh; scroll-behavior: smooth; }
         .page { display: none; }
         .page.active { display: block; }
+
         h3 { font-family: 'Roboto Condensed'; font-size: 18px; color: var(--accent); text-transform: uppercase; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border); letter-spacing: 1px; text-align: center; }
+        
         .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 40px; }
         .stat-box { background: var(--bg-card); padding: 15px; border-radius: 8px; border-bottom: 3px solid var(--accent); text-align: center; }
         .stat-box small { color: var(--text-gray); font-size: 9px; text-transform: uppercase; display: block; line-height: 1.2; margin-bottom: 5px; }
         .stat-box div { font-size: 18px; font-weight: bold; }
+        
         .chart-container { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 35px; height: 280px; width: 100%; box-sizing: border-box; }
         .market-card { background: var(--bg-card); border-radius: 12px; padding: 30px; margin-bottom: 35px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; }
+        
+        .form-center-wrapper { display: flex; justify-content: center; width: 100%; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, auto)); gap: 15px; width: 100%; justify-content: center; align-items: end; }
+        
         .field-group { display: flex; flex-direction: column; gap: 10px; align-items: center; }
         label { color: var(--text-gray); font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        
         input, select { background: var(--bg-input); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 4px; outline: none; text-align: center; width: 140px; box-sizing: border-box; font-size: 13px; }
+        input:focus { border-color: var(--accent); background: #000; }
+
+        .timer-box { background: #000; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid var(--border); width: 100%; max-width: 400px; margin: 30px auto; }
+        .time-display { font-size: 32px; font-weight: bold; font-family: monospace; color: var(--accent); margin-bottom: 10px; }
+        
         .btn-submit { display: block; background: var(--accent); color: black; border: none; padding: 18px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin: 10px auto; font-size: 15px; width: 100%; max-width: 500px; transition: 0.3s; }
+        .btn-submit:hover { filter: brightness(1.2); }
+
         .table-card { background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); padding: 20px; margin-bottom: 40px; width: 100%; box-sizing: border-box; }
         table { width: 100%; border-collapse: collapse; text-align: center; }
         th { background: #232e38; color: var(--text-gray); font-size: 10px; padding: 15px; text-transform: uppercase; }
         td { padding: 12px 5px; border-bottom: 1px solid var(--border); font-size: 12px; }
         .pos { color: var(--accent); font-weight: bold; }
         .neg { color: var(--danger); font-weight: bold; }
+        
         .btn-action { background: none; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 5px 8px; border-radius: 3px; cursor: pointer; text-transform: uppercase; font-size: 9px; margin: 0 2px; }
+        .btn-edit { border-color: var(--edit); color: var(--edit); }
+        .btn-edit:hover { background: var(--edit); color: black; }
+        .btn-del { border-color: var(--danger); color: var(--danger); }
+        .btn-del:hover { background: var(--danger); color: white; }
+
         .page-cs h3 { color: var(--cs-accent); border-bottom-color: var(--cs-accent); }
         .page-cs .stat-box { border-bottom-color: var(--cs-accent); }
         .page-cs .market-card, .page-cs .table-card { border-color: var(--cs-accent); }
+        .page-cs input:focus { border-color: var(--cs-accent); }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
         <a href="#" class="logo">⚡ ELITE CONECT</a>
-        <div class="menu-item active" id="menu-lm">⚽ UNDER LIMIT</div>
+        <div class="menu-item active" id="menu-lm">⚽ MERCADO UNDER LIMIT</div>
         <div class="menu-item" id="menu-cs">🎯 ALAVANCAGEM CS</div>
     </aside>
 
     <main class="main-content" id="mainScroll">
+        
         <div id="live-market" class="page active">
             <div class="stats-header">
                 <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
                 <div class="stat-box"><small>Stake Inicial</small><div>R$ 40,00</div></div>
-                <div class="stat-box"><small>% Lucro s/ Stake</small><div id="lm-perc-banca">0.00%</div></div>
-                <div class="stat-box"><small>ROI % Under</small><div id="lm-roi">0.00%</div></div>
-                <div class="stat-box"><small>Trades</small><div id="lm-trades">0</div></div>
-            </div>
-            <div class="chart-container"><canvas id="profitChartLM"></canvas></div>
-            <section class="market-card">
-                <h3>Registo Under Limit</h3>
-                <div class="form-grid">
-                    <div class="field-group"><label>Data</label><input type="date" id="lm-data"></div>
-                    <div class="field-group"><label>Mandante</label><input type="text" id="lm-timeA" list="global-teams"></div>
-                    <div class="field-group"><label>Visitante</label><input type="text" id="lm-timeB" list="global-teams"></div>
-                    <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada"></div>
-                    <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida"></div>
-                </div>
-                <button class="btn-submit" id="btn-add-lm">GRAVAR NA NUVEM</button>
-            </section>
-            <div class="table-card">
-                <table id="tabelaLM"><thead><tr><th>Data</th><th>Evento</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr></thead><tbody></tbody></table>
-            </div>
-        </div>
-
-        <div id="correct-score" class="page page-cs">
-            <div class="stats-header">
-                <div class="stat-box"><small>Total P/L CS</small><div id="cs-lucro" style="color: var(--cs-accent);">R$ 0,00</div></div>
-                <div class="stat-box"><small>Stake Inicial</small><div style="color: var(--cs-accent);">R$ 40,00</div></div>
-                <div class="stat-box"><small>% Lucro s/ Stake</small><div id="cs-perc-banca" style="color: var(--cs-accent);">0.00%</div></div>
-                <div class="stat-box"><small>ROI % CS</small><div id="cs-roi" style="color: var(--cs-accent);">0.00%</div></div>
-            </div>
-            <div class="chart-container"><canvas id="profitChartCS"></canvas></div>
-            <section class="market-card">
-                <h3>Registo Correct Score</h3>
-                <div class="form-grid">
-                    <div class="field-group"><label>Data</label><input type="date" id="cs-data"></div>
-                    <div class="field-group"><label>Mandante</label><input type="text" id="cs-timeA" list="global-teams"></div>
-                    <div class="field-group"><label>Visitante</label><input type="text" id="cs-timeB" list="global-teams"></div>
-                    <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada"></div>
-                    <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida"></div>
-                </div>
-                <button class="btn-submit" id="btn-add-cs" style="background: var(--cs-accent);">GRAVAR NA NUVEM</button>
-            </section>
-            <div class="table-card">
-                <table id="tabelaCS"><thead><tr><th>Data</th><th>Evento</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr></thead><tbody></tbody></table>
-            </div>
-        </div>
-    </main>
-
-    <datalist id="global-teams">
-        <option value="Flamengo"><option value="Palmeiras"><option value="Real Madrid"><option value="Barcelona">
-    </datalist>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCI0iUANVLaxqJJ351bpHkUmktGljPO7jQ",
-            authDomain: "elitetraderconect.firebaseapp.com",
-            databaseURL: "https://elitetraderconect-default-rtdb.firebaseio.com",
-            projectId: "elitetraderconect",
-            storageBucket: "elitetraderconect.firebasestorage.app",
-            messagingSenderId: "688226743030",
-            appId: "1:688226743030:web:baf9d8036acc07ba12b2d7"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        let tradesLM = [];
-        let tradesCS = [];
-        const STAKE_FIXA = 40.00;
-
-        // GRÁFICOS
-        const chartLM = new Chart(document.getElementById('profitChartLM').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L Under', data: [], borderColor: '#b1ff00', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false } });
-        const chartCS = new Chart(document.getElementById('profitChartCS').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ label: 'P/L CS', data: [], borderColor: '#00d4ff', tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: false } });
-
-        // ESCUTAR NUVEM (Tempo Real)
-        onValue(ref(db, 'trades_under'), (snapshot) => {
-            tradesLM = snapshot.val() || [];
-            atualizarTelas();
-        });
-
-        onValue(ref(db, 'trades_cs'), (snapshot) => {
-            tradesCS = snapshot.val() || [];
-            atualizarTelas();
-        });
-
-        // ADICIONAR REGISTROS
-        window.adicionarRegistro = (type) => {
-            if(type === 'LIVE') {
-                const trade = {
-                    data: document.getElementById('lm-data').value,
-                    tA: document.getElementById('lm-timeA').value.toUpperCase(),
-                    tB: document.getElementById('lm-timeB').value.toUpperCase(),
-                    entrada: parseFloat(document.getElementById('lm-entrada').value) || 0,
-                    saida: parseFloat(document.getElementById('lm-saida').value) || 0
-                };
-                tradesLM.push(trade);
-                set(ref(db, 'trades_under'), tradesLM);
-            } else {
-                const trade = {
-                    data: document.getElementById('cs-data').value,
-                    tA: document.getElementById('cs-timeA').value.toUpperCase(),
-                    tB: document.getElementById('cs-timeB').value.toUpperCase(),
-                    entrada: parseFloat(document.getElementById('cs-entrada').value) || 0,
-                    saida: parseFloat(document.getElementById('cs-saida').value) || 0
-                };
-                tradesCS.push(trade);
-                set(ref(db, 'trades_cs'), tradesCS);
-            }
-            limparInputs();
-        };
-
-        function atualizarTelas() {
-            renderTabela('tabelaLM', tradesLM, 'lm');
-            renderTabela('tabelaCS', tradesCS, 'cs');
-            updateChart(chartLM, tradesLM);
-            updateChart(chartCS, tradesCS);
-        }
-
-        function renderTabela(id, data, prefix) {
-            const tbody = document.querySelector(`#${id} tbody`);
-            tbody.innerHTML = '';
-            let totalPL = 0;
-            data.forEach((r, i) => {
-                const pl = r.saida - r.entrada;
-                totalPL += pl;
-                tbody.innerHTML += `<tr>
-                    <td>${r.data}</td>
-                    <td>${r.tA} X ${r.tB}</td>
-                    <td>R$ ${r.entrada.toFixed(2)}</td>
-                    <td>R$ ${r.saida.toFixed(2)}</td>
-                    <td class="${pl >= 0 ? 'pos' : 'neg'}">R$ ${pl.toFixed(2)}</td>
-                    <td><button class="btn-action" id="del-${prefix}-${i}">DEL</button></td>
-                </tr>`;
-            });
-
-            // Stats
-            document.getElementById(`${prefix}-lucro`).innerText = `R$ ${totalPL.toFixed(2)}`;
-            document.getElementById(`${prefix}-perc-banca`).innerText = `${((totalPL / STAKE_FIXA) * 100).toFixed(2)}%`;
-            
-            // Atribuir eventos de delete
-            data.forEach((_, i) => {
-                document.getElementById(`del-${prefix}-${i}`).onclick = () => {
-                    if(confirm("Excluir?")) {
-                        data.splice(i, 1);
-                        set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), data);
-                    }
-                }
-            });
-        }
-
-        function updateChart(chart, data) {
-            let acc = 0; const pts = [0], lbs = ["0"];
-            data.forEach((r, i) => { acc += (r.saida - r.entrada); pts.push(acc); lbs.push(i+1); });
-            chart.data.labels = lbs; chart.data.datasets[0].data = pts; chart.update();
-        }
-
-        function limparInputs() { document.querySelectorAll('input:not([type="date"])').forEach(i => i.value = ''); }
-
-        // Botoes e Menus
-        document.getElementById('btn-add-lm').onclick = () => adicionarRegistro('LIVE');
-        document.getElementById('btn-add-cs').onclick = () => adicionarRegistro('CS');
-        document.getElementById('menu-lm').onclick = () => switchPage('live-market', 'menu-lm');
-        document.getElementById('menu-cs').onclick = () => switchPage('correct-score', 'menu-cs');
-
-        function switchPage(pId, mId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            document.getElementById(pId).classList.add('active');
-            document.getElementById(mId).classList.add('active');
-        }
-    </script>
-</body>
-</html>
+                <div class="stat-box"><small>% Lucro s/ Stake Inicial</small><div id="lm-
