@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Trader | Dashboard Pro v3</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #050a0e; --bg-sidebar: #0f171e; --bg-card: #1a242d;
+            --bg-input: #0b1116; --accent: #b1ff00; --danger: #ff3b3b;
+            --edit: #ffcc00; --text-white: #ffffff; --text-gray: #8a99a6; --border: #2d3841;
+            --cs-accent: #00d4ff;
+        }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg-body); color: var(--text-white); margin: 0; display: flex; min-height: 100vh; overflow: hidden; }
+        
+        .sidebar { width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 20px; flex-shrink: 0; }
+        .logo { font-family: 'Roboto Condensed'; font-size: 22px; color: var(--accent); margin-bottom: 40px; display: block; text-decoration: none; padding-top: 20px; }
+        .menu-item { padding: 12px; border-radius: 6px; color: var(--text-gray); cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-size: 13px; font-weight: bold; }
+        .menu-item:hover, .menu-item.active { background: var(--bg-card); color: var(--accent); }
+
+        .main-content { flex: 1; padding: 60px 40px 40px 40px; overflow-y: auto; height: 100vh; scroll-behavior: smooth; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        h3 { font-family: 'Roboto Condensed'; font-size: 18px; color: var(--accent); text-transform: uppercase; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border); letter-spacing: 1px; text-align: center; }
+        
+        .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 40px; }
+        .stat-box { background: var(--bg-card); padding: 15px; border-radius: 8px; border-bottom: 3px solid var(--accent); text-align: center; }
+        .stat-box small { color: var(--text-gray); font-size: 9px; text-transform: uppercase; display: block; line-height: 1.2; margin-bottom: 5px; }
+        .stat-box div { font-size: 18px; font-weight: bold; }
+        
+        .chart-container { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 35px; height: 280px; width: 100%; box-sizing: border-box; }
+        .market-card { background: var(--bg-card); border-radius: 12px; padding: 30px; margin-bottom: 35px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; }
+        
+        .form-center-wrapper { display: flex; justify-content: center; width: 100%; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, auto)); gap: 15px; width: 100%; justify-content: center; align-items: end; }
+        
+        .field-group { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        label { color: var(--text-gray); font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        
+        input, select { background: var(--bg-input); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 4px; outline: none; text-align: center; width: 140px; box-sizing: border-box; font-size: 13px; }
+        input:focus { border-color: var(--accent); background: #000; }
+
+        .timer-box { background: #000; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid var(--border); width: 100%; max-width: 400px; margin: 30px auto; }
+        .time-display { font-size: 32px; font-weight: bold; font-family: monospace; color: var(--accent); margin-bottom: 10px; }
+        
+        .btn-submit { display: block; background: var(--accent); color: black; border: none; padding: 18px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin: 10px auto; font-size: 15px; width: 100%; max-width: 500px; transition: 0.3s; }
+        .btn-submit:hover { filter: brightness(1.2); }
+
+        .table-card { background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); padding: 20px; margin-bottom: 40px; width: 100%; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; text-align: center; }
+        th { background: #232e38; color: var(--text-gray); font-size: 10px; padding: 15px; text-transform: uppercase; }
+        td { padding: 12px 5px; border-bottom: 1px solid var(--border); font-size: 12px; }
+        .pos { color: var(--accent); font-weight: bold; }
+        .neg { color: var(--danger); font-weight: bold; }
+        
+        .btn-action { background: none; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 5px 8px; border-radius: 3px; cursor: pointer; text-transform: uppercase; font-size: 9px; margin: 0 2px; }
+        .btn-edit { border-color: var(--edit); color: var(--edit); }
+        .btn-edit:hover { background: var(--edit); color: black; }
+        .btn-del { border-color: var(--danger); color: var(--danger); }
+        .btn-del:hover { background: var(--danger); color: white; }
+
+        .page-cs h3 { color: var(--cs-accent); border-bottom-color: var(--cs-accent); }
+        .page-cs .stat-box { border-bottom-color: var(--cs-accent); }
+        .page-cs .market-card, .page-cs .table-card { border-color: var(--cs-accent); }
+        .page-cs input:focus { border-color: var(--cs-accent); }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <a href="#" class="logo">⚡ ELITE TRADER</a>
+        <div class="menu-item active" onclick="showPage('live-market', this)">⚽ MERCADO UNDER LIMIT</div>
+        <div class="menu-item" onclick="showPage('correct-score', this)">🎯 ALAVANCAGEM CS</div>
+    </aside>
+
+    <main class="main-content" id="mainScroll">
+        
+        <div id="live-market" class="page active">
+            <div class="stats-header">
+                <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
+                <div class="stat-box"><small>Stake Inicial</small><div>R$ 40,00</div></div>
+                <div class="stat-box"><small>% Lucro s/ Stake Inicial</small><div id="lm-perc-banca">0.00%</div></div>
+                <div class="stat-box"><small>ROI % Under</small><div id="lm-roi">0.00%</div></div>
+                <div class="stat-box"><small>Trades Under</small><div id="lm-trades">0</div></div>
+            </div>
+            <div class="chart-container"><canvas id="profitChartLM"></canvas></div>
+
+            <section class="market-card">
+                <h3>Registrar Apostas Under Limit</h3>
+                <div class="form-center-wrapper">
+                    <div class="form-grid">
+                        <div class="field-group"><label>Data</label><input type="date" id="lm-data"></div>
+                        <div class="field-group"><label>Mandante</label><input type="text" id="lm-timeA" list="global-teams" placeholder="Mandante"></div>
+                        <div class="field-group"><label>Visitante</label><input type="text" id="lm-timeB" list="global-teams" placeholder="Visitante"></div>
+                        <div class="field-group"><label>Liga</label><input type="text" id="lm-campeonato" list="camp-list" placeholder="Campeonato"></div>
+                        <div class="field-group"><label>Placar</label><input type="text" id="lm-placar" placeholder="0-0"></div>
+                        <div class="field-group"><label>Minuto</label><input type="number" id="lm-minuto" placeholder="Min"></div>
+                        <div class="field-group"><label>Odd Entrada(Back)</label><input type="number" step="0.01" id="lm-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Saida(Lay)</label><input type="number" step="0.01" id="lm-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada" placeholder="0.00"></div>
+                        <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida" placeholder="0.00"></div>
+                    </div>
+                </div>
+                <div class="timer-box">
+                    <label style="color: var(--text-gray); font-size: 10px; margin-bottom: 10px; display: block; letter-spacing: 2px;">CRONOMETRO</label>
+                    <div id="display" class="time-display">00:00:000</div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="btn-action" onclick="startTimer()">Start</button>
+                        <button class="btn-action" onclick="pauseTimer()">Stop</button>
+                        <button class="btn-action" onclick="resetTimer()">Reset</button>
+                    </div>
+                </div>
+                <button class="btn-submit" onclick="adicionarRegistro('LIVE')">CONFIRMAR REGISTRO UNDER</button>
+            </section>
+
+            <div class="table-card">
+                <h3>Histórico Under Limit</h3>
+                <div style="overflow-x: auto;"><table id="tabelaLM"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Min.</th><th>Odd In</th><th>Odd Out</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>ROI %</th><th>Duração</th><th>Ações</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </div>
+
+        <div id="correct-score" class="page page-cs">
+            <div class="stats-header">
+                <div class="stat-box"><small>Total P/L CS</small><div id="cs-lucro" style="color: var(--cs-accent);">R$ 0,00</div></div>
+                <div class="stat-box"><small>Stake Inicial</small><div style="color: var(--cs-accent);">R$ 40,00</div></div>
+                <div class="stat-box"><small>% Lucro s/ Stake Inicial</small><div id="cs-perc-banca" style="color: var(--cs-accent);">0.00%</div></div>
+                <div class="stat-box"><small>ROI % CS</small><div id="cs-roi" style="color: var(--cs-accent);">0.00%</div></div>
+                <div class="stat-box"><small>Acertos CS</small><div id="cs-count" style="color: var(--cs-accent);">0</div></div>
+            </div>
+            <div class="chart-container"><canvas id="profitChartCS"></canvas></div>
+
+            <section class="market-card">
+                <h3>Registrar Apostas Correct Score</h3>
+                <div class="form-center-wrapper">
+                    <div class="form-grid">
+                        <div class="field-group"><label>Data</label><input type="date" id="cs-data"></div>
+                        <div class="field-group"><label>Mandante</label><input type="text" id="cs-timeA" list="global-teams" placeholder="Mandante"></div>
+                        <div class="field-group"><label>Visitante</label><input type="text" id="cs-timeB" list="global-teams" placeholder="Visitante"></div>
+                        <div class="field-group"><label>Liga</label><input type="text" id="cs-campeonato" list="camp-list" placeholder="Campeonato"></div>
+                        <div class="field-group"><label>Placar</label>
+                            <select id="cs-placar-sel">
+                                <option value="1-0">1-0</option><option value="2-0">2-0</option><option value="2-1">2-1</option>
+                                <option value="0-1">0-1</option><option value="0-2">0-2</option><option value="1-2">1-2</option>
+                                <option value="1-1">1-1</option><option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="field-group"><label>Odd Entrada(Lay)</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Saida(Back)</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada" placeholder="0.00"></div>
+                        <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida" placeholder="0.00"></div>
+                    </div>
+                </div>
+                <button class="btn-submit" style="background: var(--cs-accent);" onclick="adicionarRegistro('CS')">CONFIRMAR REGISTRO CS</button>
+            </section>
+
+            <div class="table-card">
+                <h3>Histórico Alavancagem CS</h3>
+                <div style="overflow-x: auto;"><table id="tabelaCS"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd In</th><th>Odd Out</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>ROI %</th><th>Ações</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 80px;">
+            <button class="btn-action" onclick="exportarTudo()" style="border-color: var(--accent); color: var(--accent); padding: 12px 24px;">Exportar CSV Geral</button>
+            <button class="btn-action" onclick="limparTudo()" style="border-color: var(--danger); color: var(--danger); padding: 12px 24px;">Limpar Tudo</button>
+        </div>
+    </main>
+
+    <datalist id="global-teams">
+        <option value="Flamengo"><option value="Palmeiras"><option value="São Paulo"><option value="Corinthians"><option value="Grêmio"><option value="Real Madrid"><option value="Barcelona"><option value="Man City"><option value="Arsenal"><option value="Bayern Munique"><option value="River Plate"><option value="Boca Juniors">
+    </datalist>
+
+    <datalist id="camp-list">
+        <option value="Brasileirão Série A"><option value="Brasileirão Série B"><option value="Premier League"><option value="La Liga"><option value="Bundesliga">
+    </datalist>
+
+<script>
+    let tradesLM = JSON.parse(localStorage.getItem('trades_under_limit')) || [];
+    let tradesCS = JSON.parse(localStorage.getItem('trades_alavancagem_cs')) || [];
+    let startTime, elapsedTime = 0, timerInterval = null, chartLM = null, chartCS = null;
+    const STAKE_INICIAL_FIXA = 40.00;
+
+    window.onload = function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('lm-data').value = today;
+        document.getElementById('cs-data').value = today;
+        initCharts();
+        atualizarTela();
+    }
+
+    function showPage(pageId, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        btn.classList.add('active');
+        atualizarTela();
+    }
+
+    function initCharts() {
+        const ctxLM = document.getElementById('profitChartLM').getContext('2d');
+        chartLM = new Chart(ctxLM, { type: 'line', data: { labels: [], datasets: [{ label: 'P/L Under', data: [], borderColor: '#b1ff00', tension: 0.3, fill: true, backgroundColor: 'rgba(177, 255, 0, 0.1)' }] }, options: { responsive: true, maintainAspectRatio: false } });
+        const ctxCS = document.getElementById('profitChartCS').getContext('2d');
+        chartCS = new Chart(ctxCS, { type: 'line', data: { labels: [], datasets: [{ label: 'P/L CS', data: [], borderColor: '#00d4ff', tension: 0.3, fill: true, backgroundColor: 'rgba(0, 212, 255, 0.1)' }] }, options: { responsive: true, maintainAspectRatio: false } });
+    }
+
+    function updateChart(chart, data) {
+        let acc = 0; const pts = [0], lbs = ["Start"];
+        data.forEach((r, i) => { acc += (r.saida - r.entrada); pts.push(acc); lbs.push(`T${i+1}`); });
+        chart.data.labels = lbs; chart.data.datasets[0].data = pts; chart.update();
+    }
+
+    function timeToString(t) {
+        let mm = Math.floor(t / 60000), ss = Math.floor((t % 60000) / 1000), ms = Math.floor(t % 1000);
+        return `${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}:${ms.toString().padStart(3, '0')}`;
+    }
+    function startTimer() { if (timerInterval) return; startTime = Date.now() - elapsedTime; timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; document.getElementById("display").innerHTML = timeToString(elapsedTime); }, 10); }
+    function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
+    function resetTimer() { pauseTimer(); elapsedTime = 0; document.getElementById("display").innerHTML = "00:00:000"; }
+
+    function adicionarRegistro(type) {
+        if(type === 'LIVE') {
+            let trade = { data: document.getElementById('lm-data').value, tA: document.getElementById('lm-timeA').value.toUpperCase(), tB: document.getElementById('lm-timeB').value.toUpperCase(), lg: document.getElementById('lm-campeonato').value, pl: document.getElementById('lm-placar').value, min: document.getElementById('lm-minuto').value, oe: document.getElementById('lm-oddE').value, os: document.getElementById('lm-oddS').value, entrada: parseFloat(document.getElementById('lm-entrada').value) || 0, saida: parseFloat(document.getElementById('lm-saida').value) || 0, dr: document.getElementById('display').innerText };
+            tradesLM.push(trade); localStorage.setItem('trades_under_limit', JSON.stringify(tradesLM)); resetTimer();
+        } else {
+            let trade = { data: document.getElementById('cs-data').value, tA: document.getElementById('cs-timeA').value.toUpperCase(), tB: document.getElementById('cs-timeB').value.toUpperCase(), lg: document.getElementById('cs-campeonato').value, plEscolha: document.getElementById('cs-placar-sel').value, oe: document.getElementById('cs-oddE').value, os: document.getElementById('cs-oddS').value, entrada: parseFloat(document.getElementById('cs-entrada').value) || 0, saida: parseFloat(document.getElementById('cs-saida').value) || 0 };
+            tradesCS.push(trade); localStorage.setItem('trades_alavancagem_cs', JSON.stringify(tradesCS));
+        }
+        atualizarTela(); limparInputs();
+    }
+
+    function atualizarTela() {
+        const tbodyLM = document.querySelector('#tabelaLM tbody'); tbodyLM.innerHTML = '';
+        let tPL_LM = 0, tS_LM = 0;
+        tradesLM.forEach((r, i) => {
+            const pl = r.saida - r.entrada; tPL_LM += pl; tS_LM += r.entrada;
+            tbodyLM.innerHTML += `<tr><td>${r.data.split('-').reverse().slice(0,2).join('/')}</td><td><strong>${r.tA} X ${r.tB}</strong></td><td><small>${r.lg}</small></td><td>${r.pl}</td><td>${r.min}'</td><td>${r.oe}</td><td>${r.os}</td><td>R$ ${r.entrada.toFixed(2)}</td><td>R$ ${r.saida.toFixed(2)}</td><td class="${pl >= 0 ? 'pos' : 'neg'}">R$ ${pl.toFixed(2)}</td><td class="${pl >= 0 ? 'pos' : 'neg'}">${(r.entrada>0?pl/r.entrada*100:0).toFixed(2)}%</td><td>${r.dr}</td><td><button class="btn-action btn-edit" onclick="editar('LM', ${i})">Edit</button><button class="btn-action btn-del" onclick="remover('LM', ${i})">Del</button></td></tr>`;
+        });
+        document.getElementById('lm-lucro').innerText = `R$ ${tPL_LM.toFixed(2)}`;
+        document.getElementById('lm-perc-banca').innerText = `${((tPL_LM / STAKE_INICIAL_FIXA) * 100).toFixed(2)}%`;
+        document.getElementById('lm-roi').innerText = tS_LM > 0 ? (tPL_LM/tS_LM*100).toFixed(2) + "%" : "0.00%";
+        document.getElementById('lm-trades').innerText = tradesLM.length;
+        updateChart(chartLM, tradesLM);
+
+        const tbodyCS = document.querySelector('#tabelaCS tbody'); tbodyCS.innerHTML = '';
+        let tPL_CS = 0, tS_CS = 0;
+        tradesCS.forEach((r, i) => {
+            const pl = r.saida - r.entrada; tPL_CS += pl; tS_CS += r.entrada;
+            tbodyCS.innerHTML += `<tr><td>${r.data.split('-').reverse().slice(0,2).join('/')}</td><td><strong>${r.tA} X ${r.tB}</strong></td><td><small>${r.lg}</small></td><td>${r.plEscolha}</td><td>${r.oe}</td><td>${r.os}</td><td>R$ ${r.entrada.toFixed(2)}</td><td>R$ ${r.saida.toFixed(2)}</td><td class="${pl >= 0 ? 'pos' : 'neg'}">R$ ${pl.toFixed(2)}</td><td class="${pl >= 0 ? 'pos' : 'neg'}">${(r.entrada>0?pl/r.entrada*100:0).toFixed(2)}%</td><td><button class="btn-action btn-edit" onclick="editar('CS', ${i})">Edit</button><button class="btn-action btn-del" onclick="remover('CS', ${i})">Del</button></td></tr>`;
+        });
+        document.getElementById('cs-lucro').innerText = `R$ ${tPL_CS.toFixed(2)}`;
+        
+        // Novos campos calculados para CS
+        document.getElementById('cs-perc-banca').innerText = `${((tPL_CS / STAKE_INICIAL_FIXA) * 100).toFixed(2)}%`;
+        
+        document.getElementById('cs-roi').innerText = tS_CS > 0 ? (tPL_CS/tS_CS*100).toFixed(2) + "%" : "0.00%";
+        document.getElementById('cs-count').innerText = tradesCS.length;
+        updateChart(chartCS, tradesCS);
+    }
+
+    function editar(lista, i) {
+        if(lista === 'LM') {
+            const r = tradesLM[i]; document.getElementById('lm-data').value = r.data; document.getElementById('lm-timeA').value = r.tA; document.getElementById('lm-timeB').value = r.tB; document.getElementById('lm-campeonato').value = r.lg; document.getElementById('lm-placar').value = r.pl; document.getElementById('lm-minuto').value = r.min; document.getElementById('lm-oddE').value = r.oe; document.getElementById('lm-oddS').value = r.os; document.getElementById('lm-entrada').value = r.entrada; document.getElementById('lm-saida').value = r.saida; document.getElementById('display').innerText = r.dr; tradesLM.splice(i, 1);
+        } else {
+            const r = tradesCS[i]; document.getElementById('cs-data').value = r.data; document.getElementById('cs-timeA').value = r.tA; document.getElementById('cs-timeB').value = r.tB; document.getElementById('cs-campeonato').value = r.lg; document.getElementById('cs-placar-sel').value = r.plEscolha; document.getElementById('cs-oddE').value = r.oe; document.getElementById('cs-oddS').value = r.os; document.getElementById('cs-entrada').value = r.entrada; document.getElementById('cs-saida').value = r.saida; tradesCS.splice(i, 1);
+        }
+        atualizarTela(); document.getElementById('mainScroll').scrollTop = 0;
+    }
+
+    function remover(lista, i) { if(confirm("Excluir registro?")) { if(lista === 'LM') tradesLM.splice(i, 1); else tradesCS.splice(i, 1); localStorage.setItem('trades_under_limit', JSON.stringify(tradesLM)); localStorage.setItem('trades_alavancagem_cs', JSON.stringify(tradesCS)); atualizarTela(); } }
+    function limparInputs() { document.querySelectorAll('input:not([type="date"])').forEach(i => i.value = ''); }
+    function limparTudo() { if(confirm("Apagar tudo?")) { localStorage.clear(); tradesLM = []; tradesCS = []; atualizarTela(); } }
+</script>
+</body>
+</html>
