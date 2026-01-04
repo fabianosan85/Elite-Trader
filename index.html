@@ -15,7 +15,6 @@
         }
         body { font-family: 'Roboto', sans-serif; background: var(--bg-body); color: var(--text-white); margin: 0; display: flex; min-height: 100vh; overflow: hidden; }
 
-        /* Estilo da Tela de Login */
         #auth-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-body); display: flex; align-items: center; justify-content: center; z-index: 10000;
@@ -27,7 +26,6 @@
         .auth-box h2 { color: var(--accent); font-family: 'Roboto Condensed'; margin-bottom: 25px; }
         .auth-box input { width: 100%; margin-bottom: 15px; box-sizing: border-box; }
         
-        /* Layout Principal (Escondido antes do login) */
         #main-app { display: none; width: 100%; height: 100vh; }
         body.logged-in #auth-container { display: none; }
         body.logged-in #main-app { display: flex; }
@@ -120,7 +118,7 @@
                 </section>
                 <div class="table-card">
                     <h3>Historico Hunter Limit</h3>
-                    <table id="tabelaLM"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                    <table id="tabelaLM"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd In(Back)</th><th>Odd Out(Lay)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
 
@@ -147,8 +145,8 @@
                                 <option value="1-1">1-1</option><option value="Outros">Outros</option>
                             </select>
                         </div>
-                        <div class="field-group"><label>Odd Entrada(lay)</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
-                        <div class="field-group"><label>Odd Saida(back)</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Entrada(Lay)</label><input type="number" step="0.01" id="cs-oddE" placeholder="1.00"></div>
+                        <div class="field-group"><label>Odd Saida(Back)</label><input type="number" step="0.01" id="cs-oddS" placeholder="1.00"></div>
                         <div class="field-group"><label>Stake</label><input type="number" id="cs-entrada" placeholder="0.00"></div>
                         <div class="field-group"><label>Retorno</label><input type="number" id="cs-saida" placeholder="0.00"></div>
                     </div>
@@ -156,7 +154,7 @@
                 </section>
                 <div class="table-card">
                     <h3>Historico Correct Score</h3>
-                    <table id="tabelaCS"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr></thead><tbody></tbody></table>
+                    <table id="tabelaCS"><thead><tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd In(Lay)</th><th>Odd Out(Back)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
         </main>
@@ -170,12 +168,10 @@
     </datalist>
 
     <script type="module">
-        // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
-        // SUA CONFIGURAÇÃO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCI0iUANVLaxqJJ351bpHkUmktGljPO7jQ",
             authDomain: "elitetraderconect.firebaseapp.com",
@@ -193,7 +189,6 @@
         const STAKE_FIXA = 40.00;
         let tradesLM = [], tradesCS = [];
 
-        // --- LÓGICA DE AUTENTICAÇÃO ---
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
 
@@ -216,7 +211,6 @@
             }
         });
 
-        // --- LÓGICA DO APP ---
         let chartLM, chartCS;
 
         function iniciarApp() {
@@ -247,6 +241,8 @@
                     <td>${r.tA} X ${r.tB}</td>
                     <td>${r.lg}</td>
                     <td>${prefix === 'lm' ? r.pl : r.plEscolha}</td>
+                    <td>${r.oe || '1.00'}</td>
+                    <td>${r.os || '1.00'}</td>
                     <td>R$ ${r.entrada.toFixed(2)}</td>
                     <td>R$ ${r.saida.toFixed(2)}</td>
                     <td class="${pl >= 0 ? 'pos' : 'neg'}">R$ ${pl.toFixed(2)}</td>
@@ -288,7 +284,6 @@
             chart.data.labels = lbs; chart.data.datasets[0].data = pts; chart.update();
         }
 
-        // --- BOTÕES E TIMER ---
         document.getElementById('btn-add-lm').onclick = () => {
             tradesLM.push({ data: document.getElementById('lm-data').value, tA: document.getElementById('lm-timeA').value.toUpperCase(), tB: document.getElementById('lm-timeB').value.toUpperCase(), lg: document.getElementById('lm-campeonato').value, pl: document.getElementById('lm-placar').value, min: document.getElementById('lm-minuto').value, oe: document.getElementById('lm-oddE').value, os: document.getElementById('lm-oddS').value, entrada: parseFloat(document.getElementById('lm-entrada').value) || 0, saida: parseFloat(document.getElementById('lm-saida').value) || 0, dr: document.getElementById('display').innerText });
             set(ref(db, 'trades_under'), tradesLM);
@@ -312,10 +307,8 @@
             return `${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}:${ms.toString().padStart(3, '0')}`;
         }
 
-        // Navegação
         document.getElementById('menu-lm').onclick = () => { document.getElementById('live-market').classList.add('active'); document.getElementById('correct-score').classList.remove('active'); document.getElementById('menu-lm').classList.add('active'); document.getElementById('menu-cs').classList.remove('active'); };
         document.getElementById('menu-cs').onclick = () => { document.getElementById('correct-score').classList.add('active'); document.getElementById('live-market').classList.remove('active'); document.getElementById('menu-cs').classList.add('active'); document.getElementById('menu-lm').classList.remove('active'); };
     </script>
 </body>
 </html>
-
