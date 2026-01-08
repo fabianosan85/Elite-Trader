@@ -14,7 +14,6 @@
             --cs-accent: #00d4ff;
         }
 
-        /* Base e Layout Responsivo */
         body { font-family: 'Roboto', sans-serif; background: var(--bg-body); color: var(--text-white); margin: 0; display: flex; min-height: 100vh; overflow-x: hidden; }
         
         @media (max-width: 768px) {
@@ -25,7 +24,6 @@
             .stats-header { grid-template-columns: 1fr 1fr !important; }
         }
 
-        /* Tela de Login */
         #auth-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .auth-box { background: var(--bg-card); padding: 40px; border-radius: 12px; border: 1px solid var(--accent); text-align: center; width: 90%; max-width: 320px; box-shadow: 0 0 20px rgba(177, 255, 0, 0.2); }
         .auth-box h2 { color: var(--accent); font-family: 'Roboto Condensed'; margin-bottom: 25px; }
@@ -45,10 +43,10 @@
         .page.active { display: block; }
 
         h3 { font-family: 'Roboto Condensed'; font-size: 18px; color: var(--accent); text-transform: uppercase; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border); letter-spacing: 1px; text-align: center; }
-        .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 40px; }
+        .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 40px; }
         .stat-box { background: var(--bg-card); padding: 15px; border-radius: 8px; border-bottom: 3px solid var(--accent); text-align: center; }
         .stat-box small { color: var(--text-gray); font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .stat-box div { font-size: 18px; font-weight: bold; }
+        .stat-box div { font-size: 16px; font-weight: bold; }
         
         .chart-container { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 35px; height: 280px; width: 100%; box-sizing: border-box; }
         .market-card { background: var(--bg-card); border-radius: 12px; padding: 30px; margin-bottom: 35px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; }
@@ -101,6 +99,7 @@
                 <div class="stats-header">
                     <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
                     <div class="stat-box"><small>Stake Inicial</small><div>R$ 60,00</div></div>
+                    <div class="stat-box"><small>Banca Atual</small><div id="lm-banca-atual" style="color: var(--accent);">R$ 60,00</div></div>
                     <div class="stat-box"><small>% Lucro s/ Stake</small><div id="lm-perc-banca">0.00%</div></div>
                     <div class="stat-box"><small>ROI % Under</small><div id="lm-roi">0.00%</div></div>
                     <div class="stat-box"><small>Trades</small><div id="lm-trades">0</div></div>
@@ -134,7 +133,7 @@
                     <h3>Historico Under Limit</h3>
                     <table id="tabelaLM">
                         <thead>
-                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada(Back)</th><th>Odd Saida(Lay)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr>
+                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada</th><th>Odd Saida</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -145,6 +144,7 @@
                 <div class="stats-header">
                     <div class="stat-box"><small>Total P/L CS</small><div id="cs-lucro" style="color: var(--cs-accent);">R$ 0,00</div></div>
                     <div class="stat-box"><small>Stake Inicial</small><div style="color: var(--cs-accent);">R$ 60,00</div></div>
+                    <div class="stat-box"><small>Banca Atual</small><div id="cs-banca-atual" style="color: var(--cs-accent);">R$ 60,00</div></div>
                     <div class="stat-box"><small>% Lucro s/ Stake</small><div id="cs-perc-banca" style="color: var(--cs-accent);">0.00%</div></div>
                     <div class="stat-box"><small>ROI % CS</small><div id="cs-roi" style="color: var(--cs-accent);">0.00%</div></div>
                     <div class="stat-box"><small>Acertos</small><div id="cs-count" style="color: var(--cs-accent);">0</div></div>
@@ -167,12 +167,10 @@
                                 <optgroup label="Mandante Vence">
                                     <option value="1-0">1-0</option><option value="2-0">2-0</option>
                                     <option value="2-1">2-1</option><option value="3-0">3-0</option>
-                                    <option value="3-1">3-1</option><option value="3-2">3-2</option>
                                 </optgroup>
                                 <optgroup label="Visitante Vence">
                                     <option value="0-1">0-1</option><option value="0-2">0-2</option>
                                     <option value="1-2">1-2</option><option value="0-3">0-3</option>
-                                    <option value="1-3">1-3</option><option value="2-3">2-3</option>
                                 </optgroup>
                                 <option value="Outros">Qualquer Outro Resultado</option>
                             </select>
@@ -189,7 +187,7 @@
                     <h3>Historico Correct Score</h3>
                     <table id="tabelaCS">
                         <thead>
-                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada(Lay)</th><th>Odd Saida(Back)</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr>
+                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada</th><th>Odd Saida</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Ações</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -225,7 +223,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-        const STAKE_FIXA = 40.00;
+        
+        // STAKE INICIAL DEFINIDA EM 60.00
+        const STAKE_FIXA = 60.00;
 
         document.getElementById('btn-login').onclick = () => {
             signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
@@ -260,10 +260,10 @@
         function renderTable(id, data, prefix) {
             const tbody = document.querySelector(`#${id} tbody`);
             tbody.innerHTML = '';
-            let totalPL = 0, totalStake = 0, acertosCount = 0;
+            let totalPL = 0, totalStakeInvertida = 0, acertosCount = 0;
 
             data.forEach((r, i) => {
-                const pl = r.saida - r.entrada; totalPL += pl; totalStake += r.entrada;
+                const pl = r.saida - r.entrada; totalPL += pl; totalStakeInvertida += r.entrada;
                 if (pl > 0) acertosCount++;
 
                 tbody.innerHTML += `<tr>
@@ -281,9 +281,17 @@
                 </tr>`;
             });
 
+            // ATUALIZAÇÃO DOS BOXES DE RESULTADO
             document.getElementById(`${prefix}-lucro`).innerText = `R$ ${totalPL.toFixed(2)}`;
+            
+            // CÁLCULO DA BANCA ATUAL (STAKE INICIAL + LUCROS/PREJUÍZOS)
+            const bancaAtual = STAKE_FIXA + totalPL;
+            document.getElementById(`${prefix}-banca-atual`).innerText = `R$ ${bancaAtual.toFixed(2)}`;
+            
+            // CÁLCULO DA % SOBRE A STAKE (FIXADO EM 60)
             document.getElementById(`${prefix}-perc-banca`).innerText = `${(totalPL / STAKE_FIXA * 100).toFixed(2)}%`;
-            document.getElementById(`${prefix}-roi`).innerText = totalStake > 0 ? (totalPL/totalStake*100).toFixed(2) + "%" : "0.00%";
+            
+            document.getElementById(`${prefix}-roi`).innerText = totalStakeInvertida > 0 ? (totalPL/totalStakeInvertida*100).toFixed(2) + "%" : "0.00%";
             
             if (prefix === 'lm') {
                 document.getElementById('lm-trades').innerText = data.length;
@@ -349,6 +357,3 @@
     </script>
 </body>
 </html>
-
-
-
