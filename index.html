@@ -143,7 +143,7 @@
             <div id="correct-score" class="page page-cs">
                 <div class="stats-header">
                     <div class="stat-box"><small>Total P/L CS</small><div id="cs-lucro" style="color: var(--cs-accent);">R$ 0,00</div></div>
-                    <div class="stat-box"><small>Stake Inicial</small><div style="color: var(--cs-accent);">R$ 60,00</div></div>
+                    <div class="stat-box"><small>Stake Inicial</small><div style="color: var(--cs-accent);">R$ 100,00</div></div>
                     <div class="stat-box"><small>Banca Atual</small><div id="cs-banca-atual" style="color: var(--cs-accent);">R$ 60,00</div></div>
                     <div class="stat-box"><small>% Lucro s/ Stake</small><div id="cs-perc-banca" style="color: var(--cs-accent);">0.00%</div></div>
                     <div class="stat-box"><small>ROI % CS</small><div id="cs-roi" style="color: var(--cs-accent);">0.00%</div></div>
@@ -224,8 +224,8 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
         
-        // STAKE INICIAL DEFINIDA EM 60.00
-        const STAKE_FIXA = 60.00;
+        // STAKE INICIAL DEFINIDA EM 100.00
+        const STAKE_FIXA = 100.00;
 
         document.getElementById('btn-login').onclick = () => {
             signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
@@ -288,7 +288,7 @@
             const bancaAtual = STAKE_FIXA + totalPL;
             document.getElementById(`${prefix}-banca-atual`).innerText = `R$ ${bancaAtual.toFixed(2)}`;
             
-            // CÁLCULO DA % SOBRE A STAKE (FIXADO EM 60)
+            // CÁLCULO DA % SOBRE A STAKE (FIXADO EM 100)
             document.getElementById(`${prefix}-perc-banca`).innerText = `${(totalPL / STAKE_FIXA * 100).toFixed(2)}%`;
             
             document.getElementById(`${prefix}-roi`).innerText = totalStakeInvertida > 0 ? (totalPL/totalStakeInvertida*100).toFixed(2) + "%" : "0.00%";
@@ -357,4 +357,5 @@
     </script>
 </body>
 </html>
+
 
