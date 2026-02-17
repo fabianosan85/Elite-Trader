@@ -48,6 +48,35 @@
         .stat-box small { color: var(--text-gray); font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 5px; }
         .stat-box div { font-size: 16px; font-weight: bold; }
         
+        /* ESTILOS DO RADAR DE PÊNALTIS */
+        .penalty-card {
+            background: #1e1e1e;
+            border: 2px solid var(--danger);
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 59, 59, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0); }
+        }
+        .btn-bet365-live {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
         .chart-container { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 35px; height: 280px; width: 100%; box-sizing: border-box; }
         .market-card { background: var(--bg-card); border-radius: 12px; padding: 30px; margin-bottom: 35px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, auto)); gap: 15px; width: 100%; justify-content: center; align-items: end; }
@@ -95,6 +124,9 @@
         </aside>
 
         <main class="main-content" id="mainScroll">
+            <div id="penalty-radar"></div>
+            <audio id="alert-sound" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
+
             <div id="live-market" class="page active">
                 <div class="stats-header">
                     <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
@@ -224,8 +256,27 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
         
-        // STAKE INICIAL DEFINIDA EM 100.00
         const STAKE_FIXA = 100.00;
+
+        // FUNÇÃO DO RADAR DE PÊNALTIS
+        window.dispararAlertaPenalty = function(matchName, bet365Id) {
+            const radar = document.getElementById('penalty-radar');
+            const sound = document.getElementById('alert-sound');
+            const bet365Url = `https://www.bet365.com/#/IP/B1/E${bet365Id}/F10/I0/R1/`;
+            
+            const alerta = document.createElement('div');
+            alerta.className = 'penalty-card';
+            alerta.innerHTML = `
+                <div>
+                    <strong style="color: var(--danger); font-size: 11px; text-transform: uppercase; display: block;">🚨 Pênalti Detectado!</strong>
+                    <span style="font-size: 15px; font-weight: bold;">${matchName}</span>
+                </div>
+                <a href="${bet365Url}" target="_blank" class="btn-bet365-live">IR PARA O JOGO</a>
+            `;
+            radar.prepend(alerta);
+            sound.play();
+            setTimeout(() => alerta.remove(), 120000); // Remove após 2 min
+        };
 
         document.getElementById('btn-login').onclick = () => {
             signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
@@ -248,6 +299,14 @@
             }
             onValue(ref(db, 'trades_under'), (snap) => { tradesLM = snap.val() || []; atualizarInterface(); });
             onValue(ref(db, 'trades_cs'), (snap) => { tradesCS = snap.val() || []; atualizarInterface(); });
+            
+            // Ouvinte de Alertas em Tempo Real (Caso você configure um bot no Firebase)
+            onValue(ref(db, 'radar_penalty'), (snap) => {
+                const data = snap.val();
+                if(data && data.active) {
+                    dispararAlertaPenalty(data.match, data.bet_id);
+                }
+            });
         }
 
         function atualizarInterface() {
@@ -281,23 +340,14 @@
                 </tr>`;
             });
 
-            // ATUALIZAÇÃO DOS BOXES DE RESULTADO
             document.getElementById(`${prefix}-lucro`).innerText = `R$ ${totalPL.toFixed(2)}`;
-            
-            // CÁLCULO DA BANCA ATUAL (STAKE INICIAL + LUCROS/PREJUÍZOS)
             const bancaAtual = STAKE_FIXA + totalPL;
             document.getElementById(`${prefix}-banca-atual`).innerText = `R$ ${bancaAtual.toFixed(2)}`;
-            
-            // CÁLCULO DA % SOBRE A STAKE (FIXADO EM 100)
             document.getElementById(`${prefix}-perc-banca`).innerText = `${(totalPL / STAKE_FIXA * 100).toFixed(2)}%`;
-            
             document.getElementById(`${prefix}-roi`).innerText = totalStakeInvertida > 0 ? (totalPL/totalStakeInvertida*100).toFixed(2) + "%" : "0.00%";
             
-            if (prefix === 'lm') {
-                document.getElementById('lm-trades').innerText = data.length;
-            } else {
-                document.getElementById('cs-count').innerText = acertosCount;
-            }
+            if (prefix === 'lm') { document.getElementById('lm-trades').innerText = data.length; } 
+            else { document.getElementById('cs-count').innerText = acertosCount; }
             
             data.forEach((_, i) => {
                 document.getElementById(`del-${prefix}-${i}`).onclick = () => { if(confirm("Excluir?")) { data.splice(i,1); set(ref(db, prefix === 'lm' ? 'trades_under' : 'trades_cs'), data); }};
@@ -357,6 +407,3 @@
     </script>
 </body>
 </html>
-
-
-
