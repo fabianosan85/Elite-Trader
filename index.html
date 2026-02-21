@@ -21,7 +21,7 @@
             .sidebar { width: 100% !important; height: auto !important; border-right: none !important; border-bottom: 1px solid var(--border); padding: 10px !important; }
             .main-content { padding: 20px !important; }
             .form-grid { grid-template-columns: 1fr 1fr !important; }
-            .stats-header { grid-template-columns: 1fr 1fr !important; }
+            .stats-header { grid-template-columns: repeat(2, 1fr) !important; }
         }
 
         #auth-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); display: flex; align-items: center; justify-content: center; z-index: 10000; }
@@ -37,13 +37,14 @@
         .logo { font-family: 'Roboto Condensed'; font-size: 22px; color: var(--accent); margin-bottom: 40px; text-decoration: none; padding-top: 20px; text-align: center; }
         .menu-item { padding: 12px; border-radius: 6px; color: var(--text-gray); cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-size: 13px; font-weight: bold; }
         .menu-item:hover, .menu-item.active { background: var(--bg-card); color: var(--accent); }
+        .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); width: 100%; margin-top: 10px; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
 
         .main-content { flex: 1; padding: 60px 40px; overflow-y: auto; scroll-behavior: smooth; }
         .page { display: none; }
         .page.active { display: block; }
 
         h3 { font-family: 'Roboto Condensed'; font-size: 18px; color: var(--accent); text-transform: uppercase; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border); letter-spacing: 1px; text-align: center; }
-        .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 40px; }
+        .stats-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 40px; }
         .stat-box { background: var(--bg-card); padding: 15px; border-radius: 8px; border-bottom: 3px solid var(--accent); text-align: center; }
         .stat-box small { color: var(--text-gray); font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 5px; }
         .stat-box div { font-size: 16px; font-weight: bold; }
@@ -65,13 +66,12 @@
         
         .field-group { display: flex; flex-direction: column; gap: 10px; align-items: center; }
         label { color: var(--text-gray); font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        input, select { background: var(--bg-input); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 4px; outline: none; text-align: center; width: 100%; box-sizing: border-box; font-size: 13px; }
+        input { background: var(--bg-input); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 4px; outline: none; text-align: center; width: 100%; box-sizing: border-box; font-size: 13px; }
 
         .timer-box { background: #000; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid var(--border); width: 100%; max-width: 400px; margin: 30px auto; }
         .time-display { font-size: 32px; font-weight: bold; font-family: monospace; color: var(--accent); margin-bottom: 10px; }
         
         .btn-submit { display: block; background: var(--accent); color: black; border: none; padding: 18px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin: 10px auto; font-size: 15px; width: 100%; max-width: 500px; }
-        .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); width: 100%; margin-top: auto; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
 
         .table-card { background: var(--bg-card); border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); padding: 20px; margin-bottom: 40px; }
         table { width: 100%; border-collapse: collapse; text-align: center; min-width: 1100px; }
@@ -113,10 +113,13 @@
 
             <div id="live-market" class="page active">
                 <div class="stats-header">
-                    <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
-                    <div class="stat-box"><small>Banca Inicial</small><div>R$ 141,85</div></div> <div class="stat-box"><small>Banca Atual</small><div id="lm-banca-atual" style="color: var(--accent);">R$ 141,85</div></div> <div class="stat-box"><small>% Lucro s/ Banca</small><div id="lm-perc-banca">0.00%</div></div>
-                    <div class="stat-box"><small>ROI % Under</small><div id="lm-roi">0.00%</div></div>
+                    <div class="stat-box"><small>P/L Total</small><div id="lm-lucro">R$ 0,00</div></div>
+                    <div class="stat-box"><small>Banca Inicial</small><div>R$ 141,85</div></div>
+                    <div class="stat-box"><small>Banca Atual</small><div id="lm-banca-atual" style="color: var(--accent);">R$ 141,85</div></div>
+                    <div class="stat-box"><small>ROI %</small><div id="lm-roi">0.00%</div></div>
                     <div class="stat-box"><small>Trades</small><div id="lm-trades">0</div></div>
+                    <div class="stat-box" style="border-bottom-color: var(--accent);"><small>Acertos (Green)</small><div id="lm-greens" style="color: var(--accent);">0</div></div>
+                    <div class="stat-box" style="border-bottom-color: var(--danger);"><small>Erros (Red)</small><div id="lm-reds" style="color: var(--danger);">0</div></div>
                 </div>
                 
                 <div class="chart-container"><canvas id="profitChartLM"></canvas></div>
@@ -186,7 +189,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-        const BANCA_INICIAL = 141.85; // DEFINIDO COMO 141,85
+        const BANCA_INICIAL = 141.85;
 
         document.getElementById('btn-login').onclick = () => {
             signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
@@ -205,10 +208,16 @@
 
         function iniciarApp() {
             if(!chartLM) {
-                chartLM = new Chart(document.getElementById('profitChartLM').getContext('2d'), { 
+                const ctx = document.getElementById('profitChartLM').getContext('2d');
+                chartLM = new Chart(ctx, { 
                     type: 'line', 
-                    data: { labels: [], datasets: [{ label: 'P/L Under', data: [], borderColor: '#b1ff00' }] },
-                    options: { responsive: true, maintainAspectRatio: false } 
+                    data: { labels: [], datasets: [{ label: 'Evolução da Banca', data: [], borderColor: '#b1ff00', backgroundColor: 'rgba(177, 255, 0, 0.1)', fill: true, tension: 0.3 }] },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { grid: { color: '#2d3841' }, ticks: { color: '#8a99a6' } }, x: { grid: { display: false }, ticks: { color: '#8a99a6' } } }
+                    } 
                 });
             }
             onValue(ref(db, 'trades_under'), (snap) => { tradesLM = snap.val() || []; atualizarInterface(); });
@@ -229,18 +238,11 @@
                 dr: document.getElementById('display').innerText
             };
 
-            if(editIdx === -1) {
-                tradesLM.push(novo);
-            } else {
-                tradesLM[editIdx] = novo;
-                editIdx = -1;
-                document.getElementById('btn-add-lm').innerText = "GRAVAR NA NUVEM";
-            }
+            if(editIdx === -1) { tradesLM.push(novo); } 
+            else { tradesLM[editIdx] = novo; editIdx = -1; document.getElementById('btn-add-lm').innerText = "GRAVAR NA NUVEM"; }
 
             set(ref(db, 'trades_under'), tradesLM).then(() => {
-                document.querySelectorAll('.market-card input').forEach(input => {
-                    if(input.type !== 'date') input.value = '';
-                });
+                document.querySelectorAll('.market-card input').forEach(input => { if(input.type !== 'date') input.value = ''; });
             });
         };
 
@@ -248,19 +250,27 @@
             const tbody = document.querySelector('#tabelaLM tbody');
             tbody.innerHTML = '';
             let totalPL = 0;
-            let totalEntradas = 0;
-            let labels = [];
-            let dataset = [];
+            let totalInvestido = 0;
+            let greens = 0;
+            let reds = 0;
+            
+            // Inicia o gráfico com a banca inicial
+            let labels = ["Início"];
+            let dataset = [BANCA_INICIAL];
 
             tradesLM.forEach((r, i) => {
                 const pl = r.saida - r.entrada;
                 totalPL += pl;
-                totalEntradas += r.entrada;
+                totalInvestido += r.entrada;
+                
+                if(pl > 0) greens++;
+                else if(pl < 0) reds++;
+
                 const percStake = r.entrada > 0 ? (pl / r.entrada * 100) : 0;
                 const colorClass = pl >= 0 ? 'pos' : 'neg';
 
-                labels.push(i+1);
-                dataset.push(totalPL);
+                labels.push(`T${i+1}`);
+                dataset.push(BANCA_INICIAL + totalPL);
 
                 tbody.innerHTML += `<tr>
                     <td>${r.data}</td>
@@ -281,15 +291,12 @@
                 </tr>`;
             });
 
-            const bancaAtual = BANCA_INICIAL + totalPL;
-            const percBanca = (totalPL / BANCA_INICIAL * 100);
-            const roi = totalEntradas > 0 ? (totalPL / totalEntradas * 100) : 0;
-
             document.getElementById('lm-lucro').innerText = `R$ ${totalPL.toFixed(2)}`;
-            document.getElementById('lm-banca-atual').innerText = `R$ ${bancaAtual.toFixed(2)}`;
-            document.getElementById('lm-perc-banca').innerText = `${percBanca.toFixed(2)}%`;
-            document.getElementById('lm-roi').innerText = `${roi.toFixed(2)}%`;
+            document.getElementById('lm-banca-atual').innerText = `R$ ${(BANCA_INICIAL + totalPL).toFixed(2)}`;
+            document.getElementById('lm-roi').innerText = totalInvestido > 0 ? ((totalPL / totalInvestido) * 100).toFixed(2) + '%' : '0.00%';
             document.getElementById('lm-trades').innerText = tradesLM.length;
+            document.getElementById('lm-greens').innerText = greens;
+            document.getElementById('lm-reds').innerText = reds;
             
             chartLM.data.labels = labels;
             chartLM.data.datasets[0].data = dataset;
@@ -299,53 +306,27 @@
         window.editTrade = (i) => {
             const r = tradesLM[i];
             document.getElementById('lm-data').value = r.data;
-            document.getElementById('lm-timeA').value = r.tA;
-            document.getElementById('lm-timeB').value = r.tB;
-            document.getElementById('lm-campeonato').value = r.lg;
-            document.getElementById('lm-placar').value = r.pl;
-            document.getElementById('lm-minuto').value = r.min;
-            document.getElementById('lm-oddE').value = r.oe;
-            document.getElementById('lm-oddS').value = r.os;
-            document.getElementById('lm-entrada').value = r.entrada;
-            document.getElementById('lm-saida').value = r.saida;
-            document.getElementById('display').innerText = r.dr;
-            editIdx = i;
-            document.getElementById('btn-add-lm').innerText = "ATUALIZAR DADOS";
+            document.getElementById('lm-timeA').value = r.tA; document.getElementById('lm-timeB').value = r.tB;
+            document.getElementById('lm-campeonato').value = r.lg; document.getElementById('lm-placar').value = r.pl;
+            document.getElementById('lm-minuto').value = r.min; document.getElementById('lm-oddE').value = r.oe;
+            document.getElementById('lm-oddS').value = r.os; document.getElementById('lm-entrada').value = r.entrada;
+            document.getElementById('lm-saida').value = r.saida; document.getElementById('display').innerText = r.dr;
+            editIdx = i; document.getElementById('btn-add-lm').innerText = "ATUALIZAR DADOS";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        window.delTrade = (i) => {
-            if(confirm("Excluir definitivamente?")) {
-                tradesLM.splice(i, 1);
-                set(ref(db, 'trades_under'), tradesLM);
-            }
-        };
+        window.delTrade = (i) => { if(confirm("Excluir definitivamente?")) { tradesLM.splice(i, 1); set(ref(db, 'trades_under'), tradesLM); } };
 
-        // CRONÔMETRO COM MILÉSIMOS
         let startTime, timerInterval;
         function formatTime(ms) {
             let milliseconds = parseInt((ms % 1000));
             let seconds = Math.floor((ms / 1000) % 60);
             let minutes = Math.floor((ms / (1000 * 60)) % 60);
-            return minutes.toString().padStart(2, '0') + ":" + 
-                   seconds.toString().padStart(2, '0') + ":" + 
-                   milliseconds.toString().padStart(3, '0');
+            return minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0') + ":" + milliseconds.toString().padStart(3, '0');
         }
-
-        document.getElementById('timer-start').onclick = () => {
-            clearInterval(timerInterval);
-            startTime = Date.now();
-            timerInterval = setInterval(() => {
-                let delta = Date.now() - startTime;
-                document.getElementById('display').innerText = formatTime(delta);
-            }, 10);
-        };
+        document.getElementById('timer-start').onclick = () => { clearInterval(timerInterval); startTime = Date.now(); timerInterval = setInterval(() => { document.getElementById('display').innerText = formatTime(Date.now() - startTime); }, 10); };
         document.getElementById('timer-stop').onclick = () => clearInterval(timerInterval);
-        document.getElementById('timer-reset').onclick = () => {
-            clearInterval(timerInterval);
-            document.getElementById('display').innerText = "00:00:000";
-        };
-
+        document.getElementById('timer-reset').onclick = () => { clearInterval(timerInterval); document.getElementById('display').innerText = "00:00:000"; };
     </script>
 </body>
 </html>
