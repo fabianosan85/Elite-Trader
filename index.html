@@ -48,7 +48,6 @@
         .stat-box small { color: var(--text-gray); font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 5px; }
         .stat-box div { font-size: 16px; font-weight: bold; }
         
-        /* ESTILOS DO RADAR DE PÊNALTIS */
         .penalty-card {
             background: #1e1e1e;
             border: 2px solid var(--danger);
@@ -165,7 +164,19 @@
                     <h3>Historico Under Limit</h3>
                     <table id="tabelaLM">
                         <thead>
-                            <tr><th>Data</th><th>Evento</th><th>Liga</th><th>Placar</th><th>Odd Entrada</th><th>Odd Saida</th><th>Stake</th><th>Retorno</th><th>P/L</th><th>Duração</th><th>Ações</th></tr>
+                            <tr>
+                                <th>Data</th>
+                                <th>Evento</th>
+                                <th>Liga</th>
+                                <th>Placar</th>
+                                <th>Odd Entrada</th>
+                                <th>Odd Saida</th>
+                                <th>Stake</th>
+                                <th>Retorno</th>
+                                <th>P/L</th>
+                                <th>% da Stake</th> <th>Duração</th>
+                                <th>Ações</th>
+                            </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -258,7 +269,6 @@
         
         const STAKE_FIXA = 100.00;
 
-        // FUNÇÃO DO RADAR DE PÊNALTIS
         window.dispararAlertaPenalty = function(matchName, bet365Id) {
             const radar = document.getElementById('penalty-radar');
             const sound = document.getElementById('alert-sound');
@@ -275,7 +285,7 @@
             `;
             radar.prepend(alerta);
             sound.play();
-            setTimeout(() => alerta.remove(), 120000); // Remove após 2 min
+            setTimeout(() => alerta.remove(), 120000);
         };
 
         document.getElementById('btn-login').onclick = () => {
@@ -300,7 +310,6 @@
             onValue(ref(db, 'trades_under'), (snap) => { tradesLM = snap.val() || []; atualizarInterface(); });
             onValue(ref(db, 'trades_cs'), (snap) => { tradesCS = snap.val() || []; atualizarInterface(); });
             
-            // Ouvinte de Alertas em Tempo Real (Caso você configure um bot no Firebase)
             onValue(ref(db, 'radar_penalty'), (snap) => {
                 const data = snap.val();
                 if(data && data.active) {
@@ -322,8 +331,13 @@
             let totalPL = 0, totalStakeInvertida = 0, acertosCount = 0;
 
             data.forEach((r, i) => {
-                const pl = r.saida - r.entrada; totalPL += pl; totalStakeInvertida += r.entrada;
+                const pl = r.saida - r.entrada; 
+                totalPL += pl; 
+                totalStakeInvertida += r.entrada;
                 if (pl > 0) acertosCount++;
+
+                // Cálculo da porcentagem da stake
+                const percStake = r.entrada > 0 ? (pl / r.entrada * 100) : 0;
 
                 tbody.innerHTML += `<tr>
                     <td>${r.data.split('-').reverse().slice(0,2).join('/')}</td>
@@ -335,6 +349,7 @@
                     <td>R$ ${r.entrada.toFixed(2)}</td>
                     <td>R$ ${r.saida.toFixed(2)}</td>
                     <td class="${pl >= 0 ? 'pos' : 'neg'}">R$ ${pl.toFixed(2)}</td>
+                    ${prefix === 'lm' ? `<td class="${percStake >= 0 ? 'pos' : 'neg'}">${percStake.toFixed(2)}%</td>` : ''} 
                     ${prefix === 'lm' ? `<td>${r.dr}</td>` : ''}
                     <td><button class="btn-action" id="edit-${prefix}-${i}">EDIT</button><button class="btn-action" id="del-${prefix}-${i}">DEL</button></td>
                 </tr>`;
