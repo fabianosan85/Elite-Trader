@@ -74,15 +74,13 @@
         .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); width: 100%; margin-top: auto; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
 
         .table-card { background: var(--bg-card); border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); padding: 20px; margin-bottom: 40px; }
-        table { width: 100%; border-collapse: collapse; text-align: center; min-width: 1000px; }
+        table { width: 100%; border-collapse: collapse; text-align: center; min-width: 1100px; }
         th { background: #232e38; color: var(--text-gray); font-size: 10px; padding: 15px; text-transform: uppercase; }
         td { padding: 12px 5px; border-bottom: 1px solid var(--border); font-size: 12px; }
         .pos { color: var(--accent); font-weight: bold; }
         .neg { color: var(--danger); font-weight: bold; }
         .btn-action { background: none; border: 1px solid var(--text-gray); color: var(--text-gray); padding: 5px 8px; border-radius: 3px; cursor: pointer; font-size: 9px; }
-
-        .page-cs h3 { color: var(--cs-accent); border-bottom-color: var(--cs-accent); }
-        .page-cs .stat-box { border-bottom-color: var(--cs-accent); }
+        .btn-edit { border-color: var(--edit); color: var(--edit); }
     </style>
 </head>
 <body>
@@ -141,7 +139,7 @@
                     </div>
 
                     <div class="timer-box">
-                        <div id="display" class="time-display">00:00:00</div>
+                        <div id="display" class="time-display">00:00:000</div>
                         <button class="btn-action" id="timer-start">Start</button>
                         <button class="btn-action" id="timer-stop">Stop</button>
                         <button class="btn-action" id="timer-reset">Reset</button>
@@ -163,7 +161,8 @@
                                 <th>Stake</th>
                                 <th>Retorno</th>
                                 <th>P/L</th>
-                                <th style="color: var(--accent)">% DA STAKE</th> <th>Duração</th>
+                                <th style="color: var(--accent)">% DA STAKE</th>
+                                <th>Duração</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -191,7 +190,6 @@
         const auth = getAuth(app);
         const STAKE_FIXA = 100.00;
 
-        // Login / Logout
         document.getElementById('btn-login').onclick = () => {
             signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
             .catch(() => document.getElementById('auth-error').style.display = 'block');
@@ -205,6 +203,7 @@
 
         let tradesLM = [];
         let chartLM;
+        let editIdx = -1;
 
         function iniciarApp() {
             if(!chartLM) {
@@ -231,8 +230,21 @@
                 saida: parseFloat(document.getElementById('lm-saida').value) || 0,
                 dr: document.getElementById('display').innerText
             };
-            tradesLM.push(novo);
-            set(ref(db, 'trades_under'), tradesLM);
+
+            if(editIdx === -1) {
+                tradesLM.push(novo);
+            } else {
+                tradesLM[editIdx] = novo;
+                editIdx = -1;
+                document.getElementById('btn-add-lm').innerText = "GRAVAR NA NUVEM";
+            }
+
+            set(ref(db, 'trades_under'), tradesLM).then(() => {
+                // LIMPAR CAMPOS APÓS GRAVAR
+                document.querySelectorAll('.market-card input').forEach(input => {
+                    if(input.type !== 'date') input.value = '';
+                });
+            });
         };
 
         function atualizarInterface() {
@@ -245,7 +257,7 @@
             tradesLM.forEach((r, i) => {
                 const pl = r.saida - r.entrada;
                 totalPL += pl;
-                const percStake = r.entrada > 0 ? (pl / r.entrada * 100) : 0; // CÁLCULO DA PORCENTAGEM
+                const percStake = r.entrada > 0 ? (pl / r.entrada * 100) : 0;
                 const colorClass = pl >= 0 ? 'pos' : 'neg';
 
                 labels.push(i+1);
@@ -261,8 +273,12 @@
                     <td>R$ ${r.entrada.toFixed(2)}</td>
                     <td>R$ ${r.saida.toFixed(2)}</td>
                     <td class="${colorClass}">R$ ${pl.toFixed(2)}</td>
-                    <td class="${colorClass}">${percStake.toFixed(2)}%</td> <td>${r.dr}</td>
-                    <td><button class="btn-action" onclick="window.delTrade(${i})">DEL</button></td>
+                    <td class="${colorClass}">${percStake.toFixed(2)}%</td>
+                    <td>${r.dr}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="window.editTrade(${i})">EDIT</button>
+                        <button class="btn-action" onclick="window.delTrade(${i})">DEL</button>
+                    </td>
                 </tr>`;
             });
 
@@ -275,30 +291,54 @@
             chartLM.update();
         }
 
+        window.editTrade = (i) => {
+            const r = tradesLM[i];
+            document.getElementById('lm-data').value = r.data;
+            document.getElementById('lm-timeA').value = r.tA;
+            document.getElementById('lm-timeB').value = r.tB;
+            document.getElementById('lm-campeonato').value = r.lg;
+            document.getElementById('lm-placar').value = r.pl;
+            document.getElementById('lm-minuto').value = r.min;
+            document.getElementById('lm-oddE').value = r.oe;
+            document.getElementById('lm-oddS').value = r.os;
+            document.getElementById('lm-entrada').value = r.entrada;
+            document.getElementById('lm-saida').value = r.saida;
+            document.getElementById('display').innerText = r.dr;
+            editIdx = i;
+            document.getElementById('btn-add-lm').innerText = "ATUALIZAR DADOS";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
         window.delTrade = (i) => {
-            if(confirm("Excluir?")) {
+            if(confirm("Excluir definitivamente?")) {
                 tradesLM.splice(i, 1);
                 set(ref(db, 'trades_under'), tradesLM);
             }
         };
 
-        // Lógica simples do timer que você já tinha
-        let timer;
-        let sec = 0;
+        // CRONÔMETRO COM MILÉSIMOS
+        let startTime, timerInterval;
+        function formatTime(ms) {
+            let milliseconds = parseInt((ms % 1000));
+            let seconds = Math.floor((ms / 1000) % 60);
+            let minutes = Math.floor((ms / (1000 * 60)) % 60);
+            return minutes.toString().padStart(2, '0') + ":" + 
+                   seconds.toString().padStart(2, '0') + ":" + 
+                   milliseconds.toString().padStart(3, '0');
+        }
+
         document.getElementById('timer-start').onclick = () => {
-            clearInterval(timer);
-            timer = setInterval(() => {
-                sec++;
-                let m = Math.floor(sec / 60);
-                let s = sec % 60;
-                document.getElementById('display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            }, 1000);
+            clearInterval(timerInterval);
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                let delta = Date.now() - startTime;
+                document.getElementById('display').innerText = formatTime(delta);
+            }, 10);
         };
-        document.getElementById('timer-stop').onclick = () => clearInterval(timer);
+        document.getElementById('timer-stop').onclick = () => clearInterval(timerInterval);
         document.getElementById('timer-reset').onclick = () => {
-            clearInterval(timer);
-            sec = 0;
-            document.getElementById('display').innerText = "00:00:00";
+            clearInterval(timerInterval);
+            document.getElementById('display').innerText = "00:00:000";
         };
 
     </script>
