@@ -114,9 +114,7 @@
             <div id="live-market" class="page active">
                 <div class="stats-header">
                     <div class="stat-box"><small>Total P/L Under</small><div id="lm-lucro">R$ 0,00</div></div>
-                    <div class="stat-box"><small>Stake Inicial</small><div>R$ 141,85,00</div></div>
-                    <div class="stat-box"><small>Banca Atual</small><div id="lm-banca-atual" style="color: var(--accent);">R$ 141,85</div></div>
-                    <div class="stat-box"><small>% Lucro s/ Stake</small><div id="lm-perc-banca">0.00%</div></div>
+                    <div class="stat-box"><small>Banca Inicial</small><div>R$ 141,85</div></div> <div class="stat-box"><small>Banca Atual</small><div id="lm-banca-atual" style="color: var(--accent);">R$ 141,85</div></div> <div class="stat-box"><small>% Lucro s/ Banca</small><div id="lm-perc-banca">0.00%</div></div>
                     <div class="stat-box"><small>ROI % Under</small><div id="lm-roi">0.00%</div></div>
                     <div class="stat-box"><small>Trades</small><div id="lm-trades">0</div></div>
                 </div>
@@ -132,8 +130,8 @@
                         <div class="field-group"><label>Liga</label><input type="text" id="lm-campeonato" placeholder="Liga"></div>
                         <div class="field-group"><label>Placar</label><input type="text" id="lm-placar" placeholder="0-0"></div>
                         <div class="field-group"><label>Minuto</label><input type="number" id="lm-minuto" placeholder="Min"></div>
-                        <div class="field-group"><label>Odd Entrada</label><input type="number" step="0.01" id="lm-oddE"></div>
-                        <div class="field-group"><label>Odd Saida</label><input type="number" step="0.01" id="lm-oddS"></div>
+                        <div class="field-group"><label>Odd E</label><input type="number" step="0.01" id="lm-oddE"></div>
+                        <div class="field-group"><label>Odd S</label><input type="number" step="0.01" id="lm-oddS"></div>
                         <div class="field-group"><label>Stake</label><input type="number" id="lm-entrada"></div>
                         <div class="field-group"><label>Retorno</label><input type="number" id="lm-saida"></div>
                     </div>
@@ -188,7 +186,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-        const STAKE_FIXA = 100.00;
+        const BANCA_INICIAL = 141.85; // DEFINIDO COMO 141,85
 
         document.getElementById('btn-login').onclick = () => {
             signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
@@ -240,7 +238,6 @@
             }
 
             set(ref(db, 'trades_under'), tradesLM).then(() => {
-                // LIMPAR CAMPOS APÓS GRAVAR
                 document.querySelectorAll('.market-card input').forEach(input => {
                     if(input.type !== 'date') input.value = '';
                 });
@@ -251,12 +248,14 @@
             const tbody = document.querySelector('#tabelaLM tbody');
             tbody.innerHTML = '';
             let totalPL = 0;
+            let totalEntradas = 0;
             let labels = [];
             let dataset = [];
 
             tradesLM.forEach((r, i) => {
                 const pl = r.saida - r.entrada;
                 totalPL += pl;
+                totalEntradas += r.entrada;
                 const percStake = r.entrada > 0 ? (pl / r.entrada * 100) : 0;
                 const colorClass = pl >= 0 ? 'pos' : 'neg';
 
@@ -282,8 +281,14 @@
                 </tr>`;
             });
 
+            const bancaAtual = BANCA_INICIAL + totalPL;
+            const percBanca = (totalPL / BANCA_INICIAL * 100);
+            const roi = totalEntradas > 0 ? (totalPL / totalEntradas * 100) : 0;
+
             document.getElementById('lm-lucro').innerText = `R$ ${totalPL.toFixed(2)}`;
-            document.getElementById('lm-banca-atual').innerText = `R$ ${(STAKE_FIXA + totalPL).toFixed(2)}`;
+            document.getElementById('lm-banca-atual').innerText = `R$ ${bancaAtual.toFixed(2)}`;
+            document.getElementById('lm-perc-banca').innerText = `${percBanca.toFixed(2)}%`;
+            document.getElementById('lm-roi').innerText = `${roi.toFixed(2)}%`;
             document.getElementById('lm-trades').innerText = tradesLM.length;
             
             chartLM.data.labels = labels;
@@ -344,4 +349,3 @@
     </script>
 </body>
 </html>
-
