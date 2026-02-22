@@ -192,9 +192,19 @@
         const BANCA_INICIAL = 141.85;
 
         document.getElementById('btn-login').onclick = () => {
-            signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
-            .catch(() => document.getElementById('auth-error').style.display = 'block');
-        };
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-password').value;
+    
+    signInWithEmailAndPassword(auth, email, pass)
+    .then((userCredential) => {
+        console.log("Sucesso:", userCredential.user);
+    })
+    .catch((error) => {
+        console.error("Erro detalhado:", error.code, error.message);
+        alert("Erro ao acessar: " + error.message); // Isso vai te dizer o que o Firebase está rejeitando
+        document.getElementById('auth-error').style.display = 'block';
+    });
+};
         document.getElementById('btn-logout').onclick = () => signOut(auth);
 
         onAuthStateChanged(auth, (user) => {
@@ -261,3 +271,4 @@
                 const pl = r.saida - r.entrada;
                 totalPL += pl;
                 totalInvest
+
