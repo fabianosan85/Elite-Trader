@@ -106,7 +106,7 @@
         <main class="main-content" id="mainScroll">
             <div id="penalty-radar">
                 <div class="penalty-card">
-                    <span style="color: var(--danger); font-weight: bold;">⚠️ RADAR DE PENALTI ATIVO</span>
+                    <span style="color: var(--danger); font-weight: bold;">⚠️ LINK BET365</span>
                     <a href="https://www.bet365.com" target="_blank" class="btn-bet365-live">BET365 LIVE</a>
                 </div>
             </div>
@@ -254,81 +254,10 @@
             let greens = 0;
             let reds = 0;
             
-            // Inicia o gráfico com a banca inicial
             let labels = ["Início"];
             let dataset = [BANCA_INICIAL];
 
             tradesLM.forEach((r, i) => {
                 const pl = r.saida - r.entrada;
                 totalPL += pl;
-                totalInvestido += r.entrada;
-                
-                if(pl > 0) greens++;
-                else if(pl < 0) reds++;
-
-                const percStake = r.entrada > 0 ? (pl / r.entrada * 100) : 0;
-                const colorClass = pl >= 0 ? 'pos' : 'neg';
-
-                labels.push(`T${i+1}`);
-                dataset.push(BANCA_INICIAL + totalPL);
-
-                tbody.innerHTML += `<tr>
-                    <td>${r.data}</td>
-                    <td>${r.tA} X ${r.tB}</td>
-                    <td>${r.lg}</td>
-                    <td>${r.pl}</td>
-                    <td>${r.oe}</td>
-                    <td>${r.os}</td>
-                    <td>R$ ${r.entrada.toFixed(2)}</td>
-                    <td>R$ ${r.saida.toFixed(2)}</td>
-                    <td class="${colorClass}">R$ ${pl.toFixed(2)}</td>
-                    <td class="${colorClass}">${percStake.toFixed(2)}%</td>
-                    <td>${r.dr}</td>
-                    <td>
-                        <button class="btn-action btn-edit" onclick="window.editTrade(${i})">EDIT</button>
-                        <button class="btn-action" onclick="window.delTrade(${i})">DEL</button>
-                    </td>
-                </tr>`;
-            });
-
-            document.getElementById('lm-lucro').innerText = `R$ ${totalPL.toFixed(2)}`;
-            document.getElementById('lm-banca-atual').innerText = `R$ ${(BANCA_INICIAL + totalPL).toFixed(2)}`;
-            document.getElementById('lm-roi').innerText = totalInvestido > 0 ? ((totalPL / totalInvestido) * 100).toFixed(2) + '%' : '0.00%';
-            document.getElementById('lm-trades').innerText = tradesLM.length;
-            document.getElementById('lm-greens').innerText = greens;
-            document.getElementById('lm-reds').innerText = reds;
-            
-            chartLM.data.labels = labels;
-            chartLM.data.datasets[0].data = dataset;
-            chartLM.update();
-        }
-
-        window.editTrade = (i) => {
-            const r = tradesLM[i];
-            document.getElementById('lm-data').value = r.data;
-            document.getElementById('lm-timeA').value = r.tA; document.getElementById('lm-timeB').value = r.tB;
-            document.getElementById('lm-campeonato').value = r.lg; document.getElementById('lm-placar').value = r.pl;
-            document.getElementById('lm-minuto').value = r.min; document.getElementById('lm-oddE').value = r.oe;
-            document.getElementById('lm-oddS').value = r.os; document.getElementById('lm-entrada').value = r.entrada;
-            document.getElementById('lm-saida').value = r.saida; document.getElementById('display').innerText = r.dr;
-            editIdx = i; document.getElementById('btn-add-lm').innerText = "ATUALIZAR DADOS";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        window.delTrade = (i) => { if(confirm("Excluir definitivamente?")) { tradesLM.splice(i, 1); set(ref(db, 'trades_under'), tradesLM); } };
-
-        let startTime, timerInterval;
-        function formatTime(ms) {
-            let milliseconds = parseInt((ms % 1000));
-            let seconds = Math.floor((ms / 1000) % 60);
-            let minutes = Math.floor((ms / (1000 * 60)) % 60);
-            return minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0') + ":" + milliseconds.toString().padStart(3, '0');
-        }
-        document.getElementById('timer-start').onclick = () => { clearInterval(timerInterval); startTime = Date.now(); timerInterval = setInterval(() => { document.getElementById('display').innerText = formatTime(Date.now() - startTime); }, 10); };
-        document.getElementById('timer-stop').onclick = () => clearInterval(timerInterval);
-        document.getElementById('timer-reset').onclick = () => { clearInterval(timerInterval); document.getElementById('display').innerText = "00:00:000"; };
-    </script>
-</body>
-</html>
-
-
+                totalInvest
